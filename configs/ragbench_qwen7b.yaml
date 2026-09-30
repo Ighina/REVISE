@@ -1,0 +1,9 @@
+# Review points 6-9: realistic single-hop RAG with naturally retrieved documents, five domains.
+run_name: ragbench_qwen7b
+model: {name: Qwen/Qwen2.5-7B-Instruct, num_threads: 64, batch_size: 8}
+data: {dataset: ragbench, split: train, pool_limit: 4200, n_questions: 3000, select: all, hops: [1, 2], loader_kwargs: {per_subset: 350}}
+regimes: [evidence_only]
+conversational: {enabled: false}
+analysis: {splits: [question, document, answer, relation]}
+patch: {tasks: [state_sufficiency], modes: [multi], max_questions: 150, split: relation}
+ablate: {experiments: [projout], projout_tasks: [state_sufficiency], max_questions: 150, split: relation}

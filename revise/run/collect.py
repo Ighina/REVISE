@@ -83,7 +83,7 @@ def run_screen(cfg: dict, backend: Optional[HFBackend] = None) -> Run:
     run = Run(cfg)
     d = cfg["data"]
     pool = load_questions(d["dataset"], split=d["split"], hops=d.get("hops"), limit=d.get("pool_limit"),
-                          **({"types": d["types"]} if d.get("types") and d["dataset"] == "2wiki" else {}))
+                          **({"types": d["types"]} if d.get("types") else {}), **(d.get("loader_kwargs") or {}))
     rng = random.Random(d["seed"])
     rng.shuffle(pool)
     log.info("screening pool of %d questions (closed book)", len(pool))

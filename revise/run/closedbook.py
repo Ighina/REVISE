@@ -41,7 +41,7 @@ def run_closedbook(cfg: dict, backend=None) -> dict:
     run = Run(cfg)
     d = cfg["data"]
     pool = load_questions(d["dataset"], split=d["split"], hops=d.get("hops"), limit=d.get("pool_limit"),
-                          **({"types": d["types"]} if d.get("types") and d["dataset"] == "2wiki" else {}))
+                          **({"types": d["types"]} if d.get("types") else {}), **(d.get("loader_kwargs") or {}))
     screened = {r["qid"] for r in read_jsonl(run.screen_path)} if run.screen_path.exists() else set()
     pool = [q for q in pool if q.qid in screened] or pool
     store = ActivationStore(run.acts_dir(REGIME))

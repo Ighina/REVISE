@@ -33,9 +33,9 @@ from revise.experiment import Run
 
 log = logging.getLogger(__name__)
 
-CONTROL_KINDS = ("distractor", "redundant", "false", "answer_ctrl")
+CONTROL_KINDS = ("distractor", "redundant", "false", "answer_ctrl", "partial", "false_variant")
 NONDECISIVE_KINDS = ("gold_nondecisive", "distractor_from_none") + CONTROL_KINDS + \
-    ("post_distractor", "post_redundant", "post_false", "full_context")
+    ("post_distractor", "post_redundant", "post_false", "post_redundant_paraphrase", "full_context")
 WRONG_STATES = ("wrong", "insufficient")
 
 # task -> (selector, label) over delta-meta rows

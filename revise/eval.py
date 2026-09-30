@@ -71,6 +71,17 @@ def is_correct(pred: str, golds: List[str], mode: str = "lenient") -> bool:
             ng = normalize_answer(g)
             if ng and re.search(r"\b" + re.escape(ng) + r"\b", np_) and len(np_.split()) <= 3 * max(1, len(ng.split())):
                 return True
+            # long-form reference (e.g. RAGBench responses): accept a short prediction that the
+            # reference contains, or a yes/no/number that matches the reference's leading token
+            if len(ng.split()) > 6 and np_:
+                if len(np_.split()) >= 2 and re.search(r"\b" + re.escape(np_) + r"\b", ng):
+                    return True
+                head = ng.split()[0]
+                if np_.split()[0] in ("yes", "no", "maybe") and head == np_.split()[0]:
+                    return True
+                nums = re.findall(r"-?\d+(?:\.\d+)?", ng)
+                if re.fullmatch(r"-?\d+(?:\.\d+)?%?", np_.replace(",", "")) and np_.rstrip("%").replace(",", "") in nums:
+                    return True
     return False
 
 
