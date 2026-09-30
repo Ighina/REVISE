@@ -8,7 +8,8 @@ export GPUQ_ARGS=${GPUQ_ARGS:---devices 3 -m 20} BATCH=${BATCH:-32}
 SRC=configs/musique_2hop_qwen7b.yaml
 cpu() { local cfg=$1; shift; for st in "$@"; do echo "[$(date)] cpu $cfg $st"; REVISE_DEVICE=cpu REVISE_NUM_THREADS=48 python -m revise.cli $st -c "$cfg" ${EXTRA:-} >> "$REVISE_SCRATCH/runs/$(python -c "import yaml;print(yaml.safe_load(open('$cfg'))['run_name'])")/cpu_stage_$st.log" 2>&1 || echo "[$(date)] WARNING cpu stage $st failed for $cfg"; done; }
 gpu() { local cfg=$1; shift; HOURS=${HOURS:-6} scripts/gpu_run.sh "$cfg" "$@" || echo "[$(date)] WARNING gpu stages $* failed for $cfg"; }
-for CFG in configs/hotpotqa_qwen7b.yaml configs/ragbench_qwen7b.yaml configs/synthetic_qwen7b.yaml; do
+CFGS=("$@"); [ ${#CFGS[@]} -eq 0 ] && CFGS=(configs/hotpotqa_qwen7b.yaml configs/ragbench_qwen7b.yaml configs/synthetic_qwen7b.yaml)
+for CFG in "${CFGS[@]}"; do
   echo "[$(date)] ===== $CFG"
   RUN=$(python -c "import yaml;print(yaml.safe_load(open('$CFG'))['run_name'])"); mkdir -p "$REVISE_SCRATCH/runs/$RUN"
   # dataset download/caching happens on CPU first (needs network; the GPU job runs offline)

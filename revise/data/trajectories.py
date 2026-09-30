@@ -71,7 +71,7 @@ class DistractorPool:
 
 def _replace_ci(text: str, needle: str, repl: str) -> Tuple[str, int]:
     pat = re.compile(re.escape(needle), flags=re.IGNORECASE)
-    new, n = pat.subn(repl, text)
+    new, n = pat.subn(lambda _m: repl, text)   # function replacement: no backslash/group processing of ``repl``
     return new, n
 
 
