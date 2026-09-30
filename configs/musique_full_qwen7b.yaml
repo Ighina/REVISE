@@ -1,0 +1,8 @@
+# Phase 2: MuSiQue 2-4 hops (adds leave-one-out and permutation chains), Qwen2.5-7B.
+run_name: musiquefull_qwen7b
+model: {name: Qwen/Qwen2.5-7B-Instruct, num_threads: 64, batch_size: 8}
+data: {dataset: musique, split: train, hops: [3, 4], pool_limit: 4000, n_questions: 1500, n_random_perms: 2, include_loo: true}
+regimes: [evidence_only]
+conversational: {enabled: false}
+analysis: {splits: [question, document, answer, relation]}
+patch: {tasks: [state_sufficiency, uptake], modes: [single, multi], max_questions: 150, split: document}

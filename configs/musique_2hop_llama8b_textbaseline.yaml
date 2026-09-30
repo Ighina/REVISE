@@ -1,0 +1,13 @@
+run_name: musique2hop_llama8b
+model: {name: meta-llama/Llama-3.1-8B-Instruct, num_threads: 64, batch_size: 8}
+data: {dataset: musique, split: train, hops: [2], pool_limit: 4000, n_questions: 2000}
+text_baseline:
+  regime: evidence_only
+  splits: [document]
+  tasks: [sufficiency, uptake]
+  encoder: microsoft/deberta-v3-base
+  epochs: 1
+  max_len: 256
+  lr: 3.0e-5
+  batch_size: 32
+  train_subsample: 8000

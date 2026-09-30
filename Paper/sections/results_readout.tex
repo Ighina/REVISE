@@ -1,0 +1,61 @@
+\section{Readout results}
+\label{sec:readout}
+
+\begin{table}[t]
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{tables/probes_models}
+\caption{Held-out AUROC of the best-layer probe on paired activation updates (document-disjoint split; 95\% question-level bootstrap intervals), with the AUROC of a classifier on nuisance covariates alone and the gain from adding the probe score to that classifier. State-sufficiency probes act on the raw activation.}
+\label{tab:probes}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{auroc_by_layer}
+\caption{Held-out AUROC by relative depth for the update tasks (document split). Sufficiency peaks around mid-depth in every model; uptake and correction emerge later.}
+\label{fig:layers}
+\end{figure}
+
+\paragraph{Sufficiency is linearly readable and robust.}
+\Cref{tab:probes} shows that the decisive increment is separated from all non-decisive increments at $0.948$--$0.952$ AUROC in the three models, with the best layer at 50--60\% depth (\cref{fig:layers}). Against the matched controls only (distractor, redundant, false, answer-string from the same penultimate state) the probe still reaches $0.91$--$0.92$. The direction survives residualising the nuisance covariates ($0.94$--$0.96$) and adds $+0.11$ AUROC to a nuisance-only classifier. \Cref{tab:splits} shows the result is insensitive to the grouping: question-, document-, answer-entity- and relation-disjoint splits all give $0.94$--$0.96$, and the state probe on the raw activation reaches $0.99$. Projections of held-out increments on the sufficiency direction order the increment kinds exactly as hypothesised (\cref{fig:kinds}): decisive $>$ false $>$ distractor $>$ redundant $>$ answer-string control $>$ non-decisive gold, with post-sufficiency increments and the first hop far below. The false-evidence increment scoring second indicates that the direction encodes ``the final slot has been filled'' rather than truth, which is what the model can know before generation.
+
+\begin{figure}[t]
+\centering
+\begin{minipage}[t]{0.47\linewidth}\centering
+\includegraphics[width=\linewidth]{projection_by_kind}
+\caption{Mean projection of held-out increments on the sufficiency direction by increment kind (Qwen2.5-7B, document split; standard errors). Red: decisive.}
+\label{fig:kinds}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\linewidth}\centering
+\includegraphics[width=0.9\linewidth]{transfer_matrix}
+\caption{Cross-task transfer (Qwen2.5-7B, document split): AUROC of the direction learned for the row task on the column task.}
+\label{fig:transfer}
+\end{minipage}
+\end{figure}
+
+\paragraph{Uptake is a separate, later signal.}
+Whether a decisive increment is actually integrated (answer becomes correct) versus behaviourally ignored is decodable at $0.77$--$0.78$ AUROC (document split; $0.85$ question split), at layers near the end of the network, and this is the task where the activation adds most beyond nuisance covariates ($+0.14$ to $+0.21$). The uptake direction is nearly orthogonal to the sufficiency direction (cosine $0.02$--$0.03$) and the sufficiency direction reaches only $0.54$--$0.60$ on the uptake task, while uptake and wrong-to-correct \emph{correction} share a direction (cosine $0.30$--$0.34$; cross-task AUROC $0.82$; \cref{fig:transfer}). Correction and stability, by contrast, are largely explained by the change in the output distribution: nuisance-only classifiers reach $0.81$--$0.85$ and $0.90$--$0.92$, and the probe adds at most $0.06$.
+
+\paragraph{Transfer.}
+\Cref{tab:transfer} applies the 2-hop stateless directions without retraining. To the conversational protocol they transfer at $0.79$ (sufficiency), $0.78$ (uptake), $0.92$ (correction) and $0.82$ (stability), supporting the view that the transition is intrinsic to evidence integration rather than an artefact of being asked to reconsider. To \twowiki{} the sufficiency direction transfers at $0.96$ ($0.93$ matched), correction at $0.85$ and uptake at $0.79$; probes trained within \twowiki{} reach $0.99$, $0.89$ and $0.91$. To 3--4-hop questions sufficiency transfers at $0.82$--$0.85$; within that run the leave-one-out completions score as high as chain completions (\cref{app:additional}), and sufficiency probes reach $0.93$ on every split, but uptake falls to $0.61$ on the document and answer splits (from $0.80$ on the question and relation splits).
+
+\begin{table}[t]
+\centering\small
+\input{tables/transfer}
+\caption{Zero-retraining transfer of Qwen2.5-7B 2-hop directions (AUROC at the source's best layer).}
+\label{tab:transfer}
+\end{table}
+
+\subsection{Is the internal state needed? Text-only baselines}
+\label{sec:text}
+\Cref{tab:text} answers the obvious objection. For sufficiency, TF-IDF reaches $0.62$ and a DeBERTa that sees only the question and the added paragraph $0.72$--$0.73$, but a DeBERTa that also sees the previous context reaches $0.89$--$0.92$ at a reduced training budget (one epoch, 256 tokens, 8k increments) and $0.97$ at full budget (two epochs, 512 tokens, all increments), exceeding the probe's $0.95$ on the same split. Sufficiency is therefore largely recoverable from the text: the activation probe is an accurate readout of a property the input already determines. Uptake is the opposite case. On the same increments no text model exceeds $0.63$ on whether the model will integrate the decisive paragraph (Qwen $0.56$ reduced and $0.63$ full budget, Llama $0.52$, Mistral $0.60$ with context), while the activation probes reach $0.77$--$0.78$: whether evidence is taken up depends on the model's internal state, not on the evidence alone.
+
+\begin{table}[t]
+\centering\small
+\input{tables/text_baseline}
+\caption{Text-only classifiers on the same increments and splits versus the activation probe (document split).}
+\label{tab:text}
+\end{table}
+
+\paragraph{Closed-book transfer.}
+Applied to closed-book activations for the 4{,}000 screened questions, the evidence-trained state-correctness direction predicts closed-book correctness at $0.81$ AUROC (best layer $0.84$) against a ceiling of $0.87$ for a probe trained on closed-book data, and the abstention-flag direction predicts closed-book abstention at $0.98$; only 1.5\% of these questions are answered correctly closed-book, so we treat this as suggestive (\cref{app:additional}).

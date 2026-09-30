@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+# never keep weights, data or run artifacts in the repo (they live under REVISE_SCRATCH)
+runs/
+data/
+hf_cache/
+artifacts/
+*.npy
+*.log
+# LaTeX build files (keep main.pdf, tables and figures)
+Paper/*.aux
+Paper/*.blg
+Paper/*.bbl
+Paper/*.out
+Paper/*.fls
+Paper/*.fdb_latexmk
+Paper/*.synctex.gz

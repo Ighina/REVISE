@@ -1,0 +1,37 @@
+\section{Additional results}
+\label{app:additional}
+\begin{table}[h]
+\centering\small
+\input{tables/behaviour}
+\caption{Behaviour by condition family (evidence-only regime, 2{,}000 questions per model): fraction correct / fraction answering INSUFFICIENT.}
+\label{tab:behaviour}
+\end{table}
+\begin{table}[h]
+\centering\small
+\input{tables/splits}
+\caption{Best-layer AUROC under the four disjoint splits, for the three 2-hop runs, the 3--4-hop run and \twowiki{}.}
+\label{tab:splits}
+\end{table}
+\begin{table}[h]
+\centering\small
+\input{tables/steer}
+\caption{Low-dose steering along $\vdm$ (150 held-out questions per set). Baselines ($\alpha=0$) appear in \cref{fig:steer}.}
+\label{tab:steer}
+\end{table}
+\paragraph{Evidence-augmented regime.} With the instruction ``use the supplied evidence together with your own knowledge'' the Qwen probes give sufficiency $0.945$, matched $0.913$, uptake $0.721$, correction $0.786$ (document split), within $0.05$ of the evidence-only regime; the model answers more (sufficient: $0.51$ correct, $0.23$ abstain) and follows false evidence more.
+
+\paragraph{Logistic-direction steering.} Steering along the logistic state-sufficiency direction at the best layer, anchor onward, at $\alpha\in\{\pm2,\pm1,\pm0.5\}$ gap units ($\le1.4$ $\ell_2$) and at $\alpha\in\{\pm8,\pm16,32\}$ ($5$--$22$ $\ell_2$ on a mean residual norm of $61$), and along the uptake direction at layer 26 ($\le16$ $\ell_2$), leaves every rate within $\pm0.02$ of baseline on all five evaluation sets, as does the random control; at $32$ units all rates degrade by $0.02$--$0.05$ for probe and random alike. An all-positions variant at $\le11$ $\ell_2$ is equally flat.
+
+\paragraph{High-dose difference-of-means steering.} Adding $\alpha\,u_l\,\vdm^{(l)}$ at all positions and all layers from the best layer onward with $|\alpha|\ge2$ (per-layer gaps of $5$--$14$ $\ell_2$) produces degenerate output (every prompt ``answered'', never correctly, never INSUFFICIENT) for the probe direction and the random control alike, which motivated the four-layer, anchor-onward, $|\alpha|\le1$ protocol of \cref{fig:steer}.
+
+\paragraph{Single-layer patching.} Patching only the best sufficiency layer (16 for Qwen) leaves the insufficient prompt unchanged in all variants; patching only layer 26 with the full sufficient residual restores $0.18/0.62$, so late-layer anchor content suffices to answer.
+
+\paragraph{3--4-hop questions.} Sufficiency probes: $0.931/0.925/0.923/0.932$ (question/document/answer/relation); matched $0.907/0.900/0.896/0.906$; uptake $0.795/0.613/0.611/0.795$. Mean projection on the sufficiency direction is $+0.023$ for both chain-decisive and leave-one-out-decisive increments, $+0.003$ for false, $-0.02$ distractor, $-0.06$ redundant and answer-string, $-0.11$ non-decisive gold. Patching: none $0.05/0.20$, full $0.25/0.62$, parallel $0.06/0.19$, orthogonal $0.25/0.62$, PC256 $0.20/0.51$, random-256 $0.06/0.20$; projection-out of $\vdm$ leaves $0.03$ answered.
+
+\paragraph{\twowiki{}.} Within-dataset probes (document split): sufficiency $0.986$, matched $0.972$, uptake $0.894$, correction $0.914$; here the matched task is almost fully explained by nuisance covariates ($0.965$, chiefly the gold log-probability change), residualised $0.82$.
+
+\paragraph{Closed-book transfer.} On 4{,}000 closed-book activations (correct $1.5\%$, abstain $91.7\%$): state-correctness direction $0.810$ (best layer $0.838$), correction $0.799$, state-sufficiency $0.722$ ($0.808$), abstention flag $0.977$ for abstention; own-probe ceiling $0.874$ / $0.973$.
+
+\paragraph{Adaptive retrieval (Qwen).} Probe policy $0.442$ accuracy, $2.87$ rounds, $381$ prompt tokens; behavioural rule $0.460$, $3.09$, $402$; entropy threshold $0.404$, $3.92$; oracle $0.475$, $3.00$; full context $0.404$, $4.00$.
+
+\paragraph{Conversational protocol.} Probes trained within the conversational regime reach sufficiency $0.951$, uptake $0.818$, correction $0.922$, stability $0.959$ and revision $0.969$ (document split), the last two much higher than in the stateless regime because the model's previous answer is in the prompt.

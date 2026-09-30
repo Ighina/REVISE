@@ -1,0 +1,23 @@
+\section{Experimental setup}
+\label{sec:setup}
+
+\paragraph{Data.}
+\musique{} \citep{trivedi2022musique} provides 2--4-hop questions with gold supporting paragraphs, per-hop decompositions with sub-answers and relation types, and distractors; our main runs use its two-hop training questions, a second run 3--4-hop questions, and \twowiki{} \citep{ho2020constructing} is the transfer set. For each model we screen a pool of 4{,}000 questions closed-book and keep 2{,}000 that the model answers incorrectly without evidence (closed-book accuracy is 1.4\% for Qwen, 4.0\% for Llama, 1.3\% for 3--4-hop questions), so every increment concerns evidence the model actually needs. We keep the whole trajectory for every question, including stages after the answer first becomes correct, to avoid conditioning the data on the model's behaviour.
+
+\paragraph{Models.}
+Qwen2.5-7B-Instruct (28 layers, $d=3584$), Llama-3.1-8B-Instruct (32 layers, $d=4096$) and Mistral-7B-Instruct-v0.3 (32 layers, $d=4096$), all in bfloat16 with greedy decoding of at most 16 tokens. Prompts use each model's chat template.
+
+\paragraph{Prompt and anchor.}
+Every stateless stage uses the same template: an instruction (``Use only the supplied evidence to answer the question. If the evidence is insufficient, output INSUFFICIENT.''), the evidence block, the question and an answer cue. We read the residual stream after every decoder block at the last prompt token, the position that emits the first answer token, so all readouts are pre-generation. An \emph{evidence-augmented} regime (``use the evidence together with your own knowledge'') is run in parallel and gives the same results (\cref{app:additional}); we report the evidence-only regime unless stated.
+
+\paragraph{Evidence conditions.}
+For a question with gold hop paragraphs $g_1,\dots,g_n$ we build (\cref{app:conditions}): no evidence $C_0$; matched distractors only $C_D$; prefix chains $C_{o_1}\subset C_{o_1o_2}\subset\cdots$ in the canonical hop order, the reverse order and, for $n\ge3$, random permutations, the last prefix being \emph{minimally sufficient}; leave-one-out contexts for $n\ge3$; the sufficient context plus a distractor, plus a duplicate support, or plus a conflicting falsified paragraph; and the full 20-paragraph context. New paragraphs are inserted at a random position of the previous presentation order, so increments are textually minimal while the position of the decisive paragraph is randomised. Falsified paragraphs replace the hop's sub-answer with the sub-answer of another question of the same relation type; answer-string controls append a Wikipedia-style ``not to be confused with \{answer\}'' hatnote to a distractor.
+
+\paragraph{Increments and labels.}
+From every penultimate state $S$ (all hops but one) we form the decisive increment $S\to S{+}g_{\text{last}}$ and four matched controls from the same $S$: distractor, redundant, false and answer-string. Together with first-hop, post-sufficiency and full-context increments this yields $\approx17$ conditions and 17 increments per two-hop question ($35{,}008$ conditions and $34{,}000$ increments per model; $65{,}375$ and $65{,}599$ for 3--4 hops). Each increment carries the label $y^{\mathrm{suff}}=\mathbf 1[C_k$ sufficient, $C_{k-1}$ not$]$ and the model's behavioural transition between the two stages, from which we define \emph{uptake} (decisive increments: answer becomes correct vs.\ does not), \emph{correction} (from a wrong or abstaining state: becomes correct vs.\ not), \emph{stability} (from a correct state: stays correct vs.\ destabilised) and \emph{revision} (answer changed). Correctness uses exact match on any alias or containment within a short prediction.
+
+\paragraph{Behaviour.}
+All three models abstain on 94--97\% of distractor-only contexts and answer 64--75\% of minimally sufficient ones, with 36--47\% correct; falsified final hops halve abstention, so the models do follow false context (\cref{tab:behaviour}, \cref{app:additional}).
+
+\paragraph{Splits.}
+Probes are trained on 70\% of questions and evaluated on the rest under four groupings never shared between train and test: question id, gold document (connected components of questions sharing a supporting page), answer entity, and relation-type tuple. We report the document split by default and all four in \cref{tab:splits} (\cref{app:additional}).

@@ -1,0 +1,34 @@
+# Phase 1: MuSiQue two-hop, Qwen2.5-7B-Instruct on CPU.
+run_name: musique2hop_qwen7b
+model:
+  name: Qwen/Qwen2.5-7B-Instruct
+  dtype: bfloat16
+  num_threads: 64
+  batch_size: 8
+  max_new_tokens: 16
+data:
+  dataset: musique
+  split: train
+  hops: [2]
+  pool_limit: 4000
+  n_questions: 2000
+  select: wrong_closed_book
+  seed: 0
+  n_random_perms: 2
+regimes: [evidence_only, evidence_augmented]
+conversational:
+  enabled: true
+  base_regime: evidence_only
+analysis:
+  splits: [question, document, answer, relation]
+  test_frac: 0.3
+steer:
+  directions: [{task: state_sufficiency}, {task: uptake}]
+  alphas: [-2, -1, 0, 1, 2, 4]
+  max_questions: 150
+  split: document
+patch:
+  max_questions: 150
+  split: document
+adaptive:
+  split: document

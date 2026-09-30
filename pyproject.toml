@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "revise"
+version = "0.1.0"
+description = "Evidence-sufficiency and accommodation transitions in LLM residual streams"
+requires-python = ">=3.10"
+dependencies = [
+  "torch", "transformers>=4.45", "datasets>=2.20", "accelerate", "safetensors", "huggingface_hub",
+  "numpy", "scipy", "pandas", "pyarrow", "scikit-learn", "pyyaml", "tqdm", "matplotlib",
+  "sentencepiece", "tiktoken", "joblib",
+]
+
+[tool.setuptools.packages.find]
+include = ["revise*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["slow: needs model weights"]

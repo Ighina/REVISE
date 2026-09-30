@@ -1,0 +1,12 @@
+# Low-dose difference-of-means steering follow-up (anchor onward, few layers).
+run_name: musique2hop_qwen7b
+model: {name: Qwen/Qwen2.5-7B-Instruct, num_threads: 64, batch_size: 8}
+data: {dataset: musique, split: train, hops: [2], pool_limit: 4000, n_questions: 2000}
+ablate:
+  experiments: [dm_steer]
+  dm_alphas: [-1, -0.5, -0.25, 0.25, 0.5, 1]
+  dm_positions: anchor_onward
+  dm_max_layers: 4
+  max_questions: 150
+  split: document
+  out: ablate/results_dmsteer_small.json

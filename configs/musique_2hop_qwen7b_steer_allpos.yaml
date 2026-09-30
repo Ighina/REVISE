@@ -1,0 +1,11 @@
+# Dose-response steering on the finished MuSiQue run: large alphas, anchor-onward positions.
+run_name: musique2hop_qwen7b
+model: {name: Qwen/Qwen2.5-7B-Instruct, num_threads: 64, batch_size: 8}
+data: {dataset: musique, split: train, hops: [2], pool_limit: 4000, n_questions: 2000}
+steer:
+  directions: [{task: state_sufficiency}]
+  alphas: [-8, 2, 8, 16]
+  max_questions: 150
+  split: document
+  positions: all
+  out: steer/results_large_allpos.json

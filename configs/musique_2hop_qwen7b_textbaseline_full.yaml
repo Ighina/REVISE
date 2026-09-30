@@ -1,0 +1,15 @@
+# Full-budget text baseline (all training increments, 512 tokens, 2 epochs), document split.
+run_name: musique2hop_qwen7b
+model: {name: Qwen/Qwen2.5-7B-Instruct, num_threads: 64, batch_size: 8}
+data: {dataset: musique, split: train, hops: [2], pool_limit: 4000, n_questions: 2000}
+text_baseline:
+  regime: evidence_only
+  splits: [document]
+  tasks: [sufficiency, uptake]
+  encoder: microsoft/deberta-v3-base
+  epochs: 2
+  max_len: 512
+  lr: 2.0e-5
+  batch_size: 16
+  train_subsample: null
+  out: text_baseline/results_full_budget.json

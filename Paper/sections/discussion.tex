@@ -1,0 +1,14 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Two signals, one lever, and none of them is accommodation.}
+The results separate three things the plan conflates under ``an internal state transition''. \emph{Sufficiency} is a state of the input that the model represents cleanly and that a text model can also compute; it is a readout, and its causal counterpart is an abstention gate. \emph{Uptake} is a state of the model: given the same decisive paragraph, whether the model will integrate it is predictable from its activations and not from the text, at $0.78$ AUROC across three families. But neither readout direction is a lever, and the content that actually turns an insufficient state into an answer is high-rank, orthogonal to both, and on some models concentrated on the answer's own unembedding direction. Rather than a shared low-dimensional accommodation direction, the picture is a low-dimensional gate (answer or abstain) plus high-dimensional answer content.
+
+\paragraph{Why probes do not find the lever.}
+The logistic probe maximises separability, which it achieves along directions of low within-class variance; the mean-difference direction has a large component along a high-variance ``answering'' axis that the discriminative weight vector down-weights. The projection-out and rank experiments show the causal content is exactly in those high-variance directions. This is a concrete instance of the general warning that a high-AUROC, transferable probe direction can be causally irrelevant, and it argues for validating any proposed steering direction against the projection-out, rank and matched-random controls used here.
+
+\paragraph{Practical reading.}
+For retrieval systems the usable signal is uptake, as a detector of ignored evidence, rather than sufficiency, which the model's own abstention already tracks about as well. The abstention gate is a genuine control knob, but it trades off abstention against compliance uniformly; it does not make the model more evidence-sensitive.
+
+\paragraph{Limitations.}
+Questions were selected to be closed-book failures, so the population is retrieval-dependent by construction. Redundant evidence is a verbatim duplicate. The uptake signal weakens on 3--4-hop questions under document- and answer-disjoint splits ($0.61$), and its test sets are small ($\approx1{,}200$ increments per model). The full-budget text baseline was run for one model. Steering was tested with additive and projection interventions at the anchor and later positions; other intervention families (attention-head patching, path-specific interventions) may find levers we did not.

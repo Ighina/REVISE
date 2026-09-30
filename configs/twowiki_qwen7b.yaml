@@ -1,0 +1,19 @@
+# Transfer target: 2WikiMultiHopQA (compositional + inference questions).
+# Run probes here, then: python -m revise.cli transfer -c configs/twowiki_qwen7b.yaml --transfer-from configs/musique_2hop_qwen7b.yaml
+run_name: twowiki_qwen7b
+model:
+  name: Qwen/Qwen2.5-7B-Instruct
+  num_threads: 64
+  batch_size: 8
+data:
+  dataset: 2wiki
+  split: train
+  hops: [2]
+  types: [compositional, inference]
+  pool_limit: 3000
+  n_questions: 1000
+regimes: [evidence_only]
+conversational:
+  enabled: false
+analysis:
+  splits: [question, document, answer, relation]
