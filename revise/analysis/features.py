@@ -42,6 +42,7 @@ def build_features(run: Run, regime: str, cfg: dict) -> None:
     base_regime = cfg["conversational"]["base_regime"] if conv else regime
     beh_to = run.behavior(regime)
     beh_from = run.behavior(base_regime)
+    closed_book = {r["qid"]: bool(r["correct"]) for r in read_jsonl(run.screen_path)} if run.screen_path.exists() else {}
     store_to = ActivationStore(run.acts_dir(regime))
     store_from = ActivationStore(run.acts_dir(base_regime))
     out_dir = run.features_dir(regime)
@@ -100,6 +101,7 @@ def build_features(run: Run, regime: str, cfg: dict) -> None:
             "inserted_pos_rel": (c_to.inserted_position or 0) / max(1, len(c_to.paragraphs) - 1),
             "added_text": added_text[:2000], "n_hops": q.n_hops,
             "false_answer": next((p.meta.get("false_answer") for p in added if p.role == "false"), None),
+            "closed_book_correct": closed_book.get(inc.qid), "domain": (q.extra or {}).get("domain"),
         })
     if mats:
         np.save(out_dir / "deltas.npy", np.stack(mats, axis=0))
