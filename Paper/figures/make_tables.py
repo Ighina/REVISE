@@ -149,8 +149,58 @@ def misc():
     NUM["twowiki_probes"] = {t: w[f"deltas/{t}/document"]["best_test_auc"] for t in ["sufficiency", "sufficiency_matched", "uptake", "correction"]}
 
 
+EXT = [("HotpotQA", "hotpotqa_qwen7b", "document"), ("RAGBench", "ragbench_qwen7b", "question"), ("RAGBench (held-out sub-datasets)", "ragbench_qwen7b", "relation"),
+       ("Synthetic", "synthetic_qwen7b", "question"), ("Synthetic (held-out relation chains)", "synthetic_qwen7b", "relation")]
+
+
+def table_external():
+    rows = []
+    for name, run, split in EXT:
+        s = J(run, "probes/evidence_only/summary.json"); t = J(run, "probes/transfer_external.json")
+        p = J(run, "patch/results.json"); a = J(run, "ablate/results.json")
+        if not s: continue
+        g = lambda task: s.get(f"deltas/{task}/{split}", {}).get("best_test_auc")
+        tr = (lambda task: t[task]["auc_at_src_best_layer"] if t and task in t else None)
+        cells = [f3(g("sufficiency")), f3(g("sufficiency_matched")), f3(g("uptake")), f3(g("correction")), f3(tr("sufficiency")), f3(tr("uptake"))]
+        NUM.setdefault("external", {})[name] = {"sufficiency": g("sufficiency"), "matched": g("sufficiency_matched"), "uptake": g("uptake"), "correction": g("correction"),
+                                                "transfer_sufficiency": tr("sufficiency"), "transfer_uptake": tr("uptake")}
+        if p and "held-out" not in name:
+            mm = {x["variant"]: x for x in p["runs"] if x["task"] == "state_sufficiency" and x["mode"] == "multi"}
+            pj = {x["direction"]: x for x in a["runs"] if x["experiment"] == "projout" and x["task"] == "state_sufficiency" and x["direction_kind"] == "dm" and x["set"] == "sufficient"} if a else {}
+            cells += [f"{mm['none']['answered']:.2f}", f"{mm['full']['answered']:.2f}", f"{mm['parallel']['answered']:.2f}", f"{mm['orthogonal']['answered']:.2f}",
+                      f"{pj['probe']['answered']:.2f}" if pj else "--", f"{pj['random']['answered']:.2f}" if pj else "--"]
+            NUM["external"][name]["patch"] = {k: (v["correct"], v["answered"]) for k, v in mm.items()}
+        else:
+            cells += ["--"] * 6
+        rows.append(f"{name} & " + " & ".join(cells) + r" \\")
+    tex = [r"\begin{tabular}{l" + "c" * 12 + "}", r"\toprule",
+           r"& \multicolumn{4}{c}{within-dataset probes (AUROC)} & \multicolumn{2}{c}{MuSiQue dir.} & \multicolumn{4}{c}{patched insufficient (answered)} & \multicolumn{2}{c}{proj.-out (answered)} \\",
+           r"\cmidrule(lr){2-5}\cmidrule(lr){6-7}\cmidrule(lr){8-11}\cmidrule(lr){12-13}",
+           r"Dataset & suff. & matched & uptake & corr. & suff. & uptake & none & full & $\parallel v$ & $\perp v$ & $\vdm$ & random \\", r"\midrule"] + rows + [r"\bottomrule", r"\end{tabular}"]
+    open(f"{OUT}/external.tex", "w").write("\n".join(tex))
+
+
+def table_groups():
+    rows = []
+    for name, run, split, gname, order in [("HotpotQA", "hotpotqa_qwen7b", "document", "closed_book", ["incorrect", "correct"]),
+                                            ("HotpotQA", "hotpotqa_qwen7b", "document", "qtype", ["bridge", "comparison"]),
+                                            ("RAGBench", "ragbench_qwen7b", "question", "domain", ["biomedical", "finance", "technical", "customer_support", "general", "wikipedia"]),
+                                            ("RAGBench", "ragbench_qwen7b", "question", "n_hops", ["1", "2"]),
+                                            ("Synthetic", "synthetic_qwen7b", "question", "n_hops", ["1", "2", "3"])]:
+        g = J(run, f"probes/group_auc_{split}.json")
+        if not g: continue
+        for grp in order:
+            cells = []
+            for task in ["sufficiency", "uptake", "correction"]:
+                v = g.get(task, {}).get("groups", {}).get(gname, {}).get(grp)
+                cells.append(f"{v['auc']:.3f} ({v['n']})" if v and v["auc"] is not None else "--")
+            rows.append(f"{name} & {gname.replace('_', ' ')} & {grp.replace('_', ' ')} & " + " & ".join(cells) + r" \\")
+    tex = [r"\begin{tabular}{lllccc}", r"\toprule", r"Dataset & grouping & group & sufficiency & uptake & correction \\", r"\midrule"] + rows + [r"\bottomrule", r"\end{tabular}"]
+    open(f"{OUT}/groups.tex", "w").write("\n".join(tex))
+
+
 if __name__ == "__main__":
-    for f in (table_probes, table_splits, table_text_baseline, table_causal, table_steer, table_transfer, table_behaviour, misc):
+    for f in (table_probes, table_splits, table_text_baseline, table_causal, table_steer, table_transfer, table_behaviour, table_external, table_groups, misc):
         try:
             f(); print("ok", f.__name__)
         except Exception as ex:

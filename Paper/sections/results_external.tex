@@ -1,0 +1,21 @@
+\section{External validity: other benchmarks, natural retrieval, domain shift}
+\label{sec:external}
+
+The trajectories above are built from gold paragraphs of Wikipedia multi-hop benchmarks. We therefore repeat the pipeline unchanged on three further sources (\cref{tab:external}): \textbf{HotpotQA} (distractor setting; 2{,}000 questions, closed-book-correct ones kept); \textbf{RAGBench}, 3{,}000 mostly single-hop questions from twelve sub-datasets across biomedical, finance, technical, customer-support and general domains, whose evidence units are the \emph{naturally retrieved} documents of the original RAG pipelines (gold: documents with annotated relevant sentences; distractors: the other retrieved documents); and a \textbf{synthetic} benchmark of 2{,}400 questions over fictional entities (closed-book accuracy zero) with one to three hops, five template families per relation, and paraphrase, partial and contradictory variants of every gold fact.
+
+\begin{table}[t]
+\centering\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\input{tables/external}
+\caption{External validity (Qwen2.5-7B): within-dataset probes on the row's split, MuSiQue 2-hop directions applied without retraining, and the patching and projection-out tests of \cref{sec:causal} (answered rate, 150 held-out questions).}
+\label{tab:external}
+\end{table}
+
+\paragraph{Readouts.}
+Sufficiency is decodable on every source ($0.98$ HotpotQA, $0.90$ RAGBench, $0.97$ synthetic) and against matched controls ($0.96$, $0.94$, $0.95$), which on the synthetic data include paraphrastic redundancy, partial evidence and contradictions; the projection ordering there is decisive (chain, leave-one-out or paraphrased) $>$ contradictory $>$ partial $\approx$ redundant $>$ distractor $>$ answer-string control. Uptake is decodable on all three ($0.73$, $0.75$, $0.93$), and the per-group breakdown (\cref{tab:groups}, \cref{app:additional}) shows it is not a multi-hop artefact: on RAGBench single-hop questions it reaches $0.73$ ($n{=}444$), on HotpotQA comparison questions, whose two facts are independent lookups, $0.79$ against $0.68$ for bridge questions, and on single-hop synthetic questions $0.99$. It is present in every RAGBench domain ($0.70$--$0.78$) and, on HotpotQA, in both closed-book-correct ($0.80$) and closed-book-incorrect ($0.72$) questions, while sufficiency is decoded equally in both groups ($0.984$ vs $0.978$): the readout is not a ``need for evidence'' signal.
+
+\paragraph{Transfer across construction and domain.}
+The MuSiQue directions transfer to HotpotQA at $0.95$ (sufficiency) but only partially to RAGBench ($0.71$; matched $0.78$; uptake $0.59$) and to the synthetic data ($0.74$; uptake $0.72$; correction $0.80$). Within RAGBench, holding out whole sub-datasets drops sufficiency from $0.90$ to $0.72$ (matched $0.94\to0.87$, uptake $0.75\to0.70$), and holding out relation chains on the synthetic data costs two to five points. The state is therefore present under natural retrieval and in every domain, but its direction is partly dataset-specific; a Wikipedia-trained detector should not be deployed unadapted on biomedical or technical RAG.
+
+\paragraph{Causal dissociation.}
+The dissociation replicates on all three sources: the full anchor patch makes the insufficient prompt answer ($0.41\to0.92$, $0.15\to0.72$, $0.03\to0.89$), the probe-direction component does nothing, the orthogonal component carries the effect, and projecting out $\vdm$ silences answering ($0.17$, $0.10$, $0.00$) while a random direction does not. The synthetic case is the cleanest: the patched model answers $89\%$ of the time but is never correct, since a fictional answer can only be copied from evidence tokens the insufficient prompt lacks; the anchor carries the decision to answer, the answer is read from the context at generation time. On HotpotQA the $17\%$ still answering under projection-out are almost all correct, consistent with parametric answers surviving an evidence gate.

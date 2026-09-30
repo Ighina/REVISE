@@ -5,7 +5,7 @@
 \centering\scriptsize
 \setlength{\tabcolsep}{3pt}
 \input{tables/causal}
-\caption{Causal tests on 150 held-out questions (document split), all layers from the best sufficiency layer onward. Left: the insufficient prompt $C_{n-1}$ with its anchor residual patched (correct / answered). Right: the sufficient prompt with the component along a direction set to its insufficient-state value (answered). $\vdm$: difference-of-means sufficiency direction; $\vlr$: logistic-probe direction.}
+\caption{Causal tests, 150 held-out questions, all layers from the best sufficiency layer onward. Left: insufficient prompt with its anchor residual patched (correct / answered). Right: sufficient prompt with the component along a direction set to its insufficient-state value (answered). $\vdm$: mean-difference direction; $\vlr$: logistic-probe direction.}
 \label{tab:causal}
 \end{table}
 
@@ -17,7 +17,7 @@ Replacing the anchor residual of the insufficient prompt with the sufficient run
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{subspace_rank}
+\includegraphics[width=0.84\linewidth]{subspace_rank}
 \caption{Rank of the causal subspace: the insufficient prompt patched with the sufficient update projected on the top-$k$ principal components of training updates, on a random 256-dimensional subspace, on the gold answer's unembedding direction (``unemb''), or on everything but that direction.}
 \label{fig:subspace}
 \end{figure}
@@ -30,10 +30,9 @@ The one direction with a causal effect is $\vdm$, the mean difference between su
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{steer_dose_response}
+\includegraphics[width=0.84\linewidth]{steer_dose_response}
 \caption{Dose-response of difference-of-means steering (four layers from the best sufficiency layer, anchor onward; $\alpha$ in units of the sufficient-minus-insufficient gap). Negative $\alpha$ induces abstention everywhere; positive $\alpha$ induces answering everywhere, including on distractors and false evidence.}
 \label{fig:steer}
 \end{figure}
 
-\paragraph{Adaptive retrieval.}
-Stopping retrieval on the pre-generation state-sufficiency score (calibrated at $0.97$ precision on training questions) reaches $0.44$ accuracy in $2.9$ rounds on held-out Qwen trajectories, versus $0.46$ in $3.1$ rounds for ``stop when the model does not say INSUFFICIENT'' and $0.475$ for an oracle: the readout saves rounds but does not beat the model's own abstention.
+Used to stop retrieval, the pre-generation sufficiency score saves rounds but beats ``stop when the model does not say INSUFFICIENT'' only on HotpotQA ($0.71$ vs $0.65$; \cref{app:additional}).

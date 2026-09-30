@@ -1,5 +1,23 @@
 \section{Additional results}
 \label{app:additional}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\linewidth]{transfer_matrix}
+\caption{Cross-task transfer (Qwen2.5-7B, document split): AUROC of the direction learned for the row task, evaluated on the column task.}
+\label{fig:transfer}
+\end{figure}
+\begin{table}[h]
+\centering\small
+\input{tables/transfer}
+\caption{Zero-retraining transfer of Qwen2.5-7B 2-hop directions (AUROC at the source's best layer).}
+\label{tab:transfer}
+\end{table}
+\begin{table}[h]
+\centering\scriptsize
+\input{tables/groups}
+\caption{Held-out probe AUROC by question group (test-set increment counts in parentheses): closed-book status, question type, domain and hop count.}
+\label{tab:groups}
+\end{table}
 \begin{table}[h]
 \centering\small
 \input{tables/behaviour}
@@ -30,8 +48,8 @@
 
 \paragraph{\twowiki{}.} Within-dataset probes (document split): sufficiency $0.986$, matched $0.972$, uptake $0.894$, correction $0.914$; here the matched task is almost fully explained by nuisance covariates ($0.965$, chiefly the gold log-probability change), residualised $0.82$.
 
-\paragraph{Closed-book transfer.} On 4{,}000 closed-book activations (correct $1.5\%$, abstain $91.7\%$): state-correctness direction $0.810$ (best layer $0.838$), correction $0.799$, state-sufficiency $0.722$ ($0.808$), abstention flag $0.977$ for abstention; own-probe ceiling $0.874$ / $0.973$.
+\paragraph{Adaptive retrieval (Qwen).} MuSiQue: probe policy (threshold at $0.97$ precision on training questions) $0.442$ accuracy, $2.87$ rounds, $381$ prompt tokens; behavioural rule $0.460$, $3.09$, $402$; entropy threshold $0.404$, $3.92$; oracle $0.475$, $3.00$; full context $0.404$, $4.00$. HotpotQA: probe $0.707$ in $2.90$ rounds; behavioural $0.650$ in $2.53$; entropy $0.685$ in $3.99$; oracle $0.740$ in $3.00$.
 
-\paragraph{Adaptive retrieval (Qwen).} Probe policy $0.442$ accuracy, $2.87$ rounds, $381$ prompt tokens; behavioural rule $0.460$, $3.09$, $402$; entropy threshold $0.404$, $3.92$; oracle $0.475$, $3.00$; full context $0.404$, $4.00$.
+\paragraph{Closed-book transfer.} On 4{,}000 closed-book activations (correct $1.5\%$, abstain $91.7\%$): state-correctness direction $0.810$ (best layer $0.838$), correction $0.799$, state-sufficiency $0.722$ ($0.808$), abstention flag $0.977$ for abstention; own-probe ceiling $0.874$ / $0.973$.
 
 \paragraph{Conversational protocol.} Probes trained within the conversational regime reach sufficiency $0.951$, uptake $0.818$, correction $0.922$, stability $0.959$ and revision $0.969$ (document split), the last two much higher than in the stateless regime because the model's previous answer is in the prompt.

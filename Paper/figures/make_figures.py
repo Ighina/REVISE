@@ -18,7 +18,7 @@ def load(model, rel):
 
 
 def fig_auroc_by_layer():
-    fig, axes = plt.subplots(1, 3, figsize=(7.0, 2.1), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(7.0, 1.75), sharey=True)
     for ax, (m, r) in zip(axes, MODELS.items()):
         s = load(m, "probes/evidence_only/summary.json")
         for t in ["sufficiency", "sufficiency_matched", "uptake", "correction", "stability"]:
@@ -53,7 +53,7 @@ def baseline_rates(model):
 
 
 def fig_steer():
-    fig, axes = plt.subplots(1, 3, figsize=(7.0, 2.1), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(7.0, 1.75), sharey=True)
     sets = [("sufficient", "sufficient: correct", "correct", "#2ca02c"), ("sufficient", "sufficient: answered", "answered", "#98df8a"),
             ("insufficient", "insufficient: answered", "answered", "#d62728"), ("distractor_only", "distractors only: answered", "answered", "#ff9896"),
             ("false", "false evidence: followed", "false_follow", "#9467bd")]
@@ -74,7 +74,7 @@ def fig_steer():
 
 
 def fig_subspace():
-    fig, axes = plt.subplots(1, 3, figsize=(7.0, 2.0), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(7.0, 1.7), sharey=True)
     order = ["none", "pca1", "pca4", "pca16", "pca64", "pca256", "pca256_rand", "unembed_add", "unembed_remove", "full"]
     lab = {"none": "none", "pca1": "PC1", "pca4": "PC4", "pca16": "PC16", "pca64": "PC64", "pca256": "PC256", "pca256_rand": "rand256",
            "unembed_add": "unemb", "unembed_remove": "full−unemb", "full": "full"}
