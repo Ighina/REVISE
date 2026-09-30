@@ -103,15 +103,22 @@ def fig_projection_by_kind():
 def fig_transfer():
     s = load("Qwen2.5-7B", "probes/evidence_only/summary.json"); tm = s["transfer/document"]
     tasks = list(tm["auc"]); M = np.array([[tm["auc"][a].get(b) or np.nan for b in tasks] for a in tasks])
-    fig, ax = plt.subplots(figsize=(3.4, 2.8))
-    im = ax.imshow(M, vmin=0.5, vmax=1.0, cmap="viridis")
-    ax.set_xticks(range(len(tasks))); ax.set_xticklabels([t.replace("_", "\n") for t in tasks], fontsize=6, rotation=45, ha="right")
-    ax.set_yticks(range(len(tasks))); ax.set_yticklabels([t.replace("_", " ") for t in tasks], fontsize=6)
+    labels = [t.replace("_", " ") for t in tasks]
+    fig, ax = plt.subplots(figsize=(4.2, 3.6))
+    cmap = plt.get_cmap("viridis"); vmin, vmax = 0.5, 1.0
+    im = ax.imshow(M, vmin=vmin, vmax=vmax, cmap=cmap)
+    ax.set_xticks(range(len(tasks))); ax.set_xticklabels(labels, fontsize=7, rotation=30, ha="right", rotation_mode="anchor")
+    ax.set_yticks(range(len(tasks))); ax.set_yticklabels(labels, fontsize=7)
     for i in range(len(tasks)):
         for j in range(len(tasks)):
-            ax.text(j, i, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=5.5, color="w" if M[i, j] < 0.8 else "k")
-    ax.set_xlabel("evaluated task"); ax.set_ylabel("direction learned for")
-    fig.colorbar(im, ax=ax, fraction=0.046, label="AUROC"); fig.tight_layout(); fig.savefig(f"{OUT}/transfer_matrix.pdf"); plt.close(fig)
+            r, g, b, _ = cmap((M[i, j] - vmin) / (vmax - vmin))
+            lum = 0.2126 * r + 0.7152 * g + 0.0722 * b          # relative luminance of the cell colour
+            ax.text(j, i, f"{M[i, j]:.2f}", ha="center", va="center", fontsize=6.5, color="black" if lum > 0.5 else "white")
+    ax.set_xlabel("evaluated task", labelpad=8); ax.set_ylabel("direction learned for", labelpad=8)
+    ax.tick_params(axis="both", length=2, pad=2)
+    cb = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04); cb.set_label("AUROC", labelpad=6); cb.ax.tick_params(labelsize=7)
+    fig.subplots_adjust(left=0.3, right=0.98, top=0.98, bottom=0.3)
+    fig.savefig(f"{OUT}/transfer_matrix.pdf", bbox_inches="tight", pad_inches=0.05); plt.close(fig)
 
 
 if __name__ == "__main__":
