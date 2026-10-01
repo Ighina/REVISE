@@ -11,7 +11,7 @@ import time
 from revise import config as _cfg  # noqa: F401
 from revise.experiment import Run, load_config
 
-STAGES = ["screen", "collect", "conversational", "features", "probes", "transfer", "steer", "patch", "adaptive", "ablate", "text_baseline", "closedbook", "retrieve", "variants", "report", "all"]
+STAGES = ["screen", "collect", "conversational", "features", "probes", "transfer", "steer", "patch", "adaptive", "ablate", "text_baseline", "closedbook", "retrieve", "variants", "judge", "report", "all"]
 
 
 def _setup_logging(run: Run) -> None:
@@ -113,6 +113,10 @@ def main(argv=None) -> None:
         conds, incs = build_all(qs, seed=d["seed"], n_random_perms=d["n_random_perms"], include_full=d["include_full"], include_loo=d["include_loo"])
         write_jsonl(run.conditions_path, (c.to_json() for c in conds)); write_jsonl(run.increments_path, (i.to_json() for i in incs))
         log.info("variants attached: llm=%d independent=%d; rebuilt %d conditions / %d increments", n_llm, n_ind, len(conds), len(incs))
+    if stage == "judge":
+        from revise.run.judge import run_judge
+        for r in regimes:
+            run_judge(cfg, r, backend=be())
     if stage == "retrieve":
         from revise.data.retrieval import retrieve_for_questions
         rcfg = cfg["data"].get("retrieval") or {"method": "bm25", "k": 20}

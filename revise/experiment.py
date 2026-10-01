@@ -103,8 +103,17 @@ class Run:
     def increments(self) -> List[Increment]:
         return [Increment.from_json(d) for d in read_jsonl(self.increments_path)]
 
-    def behavior(self, regime: str) -> Dict[str, dict]:
+    def behavior(self, regime: str, judged: bool = True) -> Dict[str, dict]:
+        """Behaviour rows keyed by condition key.  When an LLM-judged copy exists
+        (``<regime>.judged.jsonl``, see ``run/judge.py``) it takes precedence."""
         p = self.behavior_path(regime)
+        pj = p.with_suffix(".judged.jsonl")
+        if judged and pj.exists():
+            rows = {r["key"]: r for r in read_jsonl(pj)}
+            if p.exists():   # rows not yet judged fall back to lenient scoring
+                for r in read_jsonl(p):
+                    rows.setdefault(r["key"], r)
+            return rows
         if not p.exists():
             return {}
         return {r["key"]: r for r in read_jsonl(p)}
