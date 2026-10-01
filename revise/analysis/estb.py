@@ -57,6 +57,11 @@ def cell_table(run: Run, src: Run, regime: str = "evidence_only", mode: str = "q
             m_own = json.load(open(d_own / "metrics.json")); layer_own = m_own["best_layer"]
             own = (layer_own, np.load(d_own / "coef_scaled.npy")[m_own["layers"].index(layer_own)])
         idx, y = _select(meta, task, DELTA_TASKS)
+        # never score the source directions on questions the source probes were trained on
+        src_assign = make_split(src.questions(), "document", src.cfg["analysis"]["test_frac"], src.cfg["analysis"]["seed"])
+        src_train = {q for q, sp in src_assign.items() if sp == "train"}
+        clean = np.array([meta[i]["qid"] not in src_train for i in idx])
+        idx, y = idx[clean], y[clean]
         te = np.array([assign.get(meta[i]["qid"], "train") == "test" for i in idx])
         if v_src.shape[0] != X.shape[2]:
             v_src = None

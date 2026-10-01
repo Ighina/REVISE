@@ -1,5 +1,18 @@
 \section{Additional results}
 \label{app:additional}
+\begin{table}[h]
+\centering\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\input{tables/estb}
+\caption{Evidence-source axis of the Evidence State Transition Benchmark (Qwen2.5-7B, MuSiQue 2-hop). MuSiQue-direction transfer only on questions outside the source probes' training split. Answered rate: insufficient prompt unpatched, with the full sufficient anchor, with only the probe-direction component; sufficient prompt with $\vdm$ projected to its insufficient value.}
+\label{tab:estb}
+\end{table}
+\begin{table}[h]
+\centering\small
+\input{tables/estb_quality}
+\caption{Linguistic-form and quality states (MuSiQue variants run): AUROC separating each quality state's increments from decisive increments, with the run's own probe and with the MuSiQue direction (source-unseen questions).}
+\label{tab:estb_quality}
+\end{table}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\linewidth]{transfer_matrix}

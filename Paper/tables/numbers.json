@@ -1185,10 +1185,10 @@
   "RAGBench": {
    "sufficiency": 0.8984498746326013,
    "matched": 0.94442073180371,
-   "uptake": 0.7539125126081648,
-   "correction": 0.791382904288913,
+   "uptake": 0.6848513332319645,
+   "correction": 0.7418970876963351,
    "transfer_sufficiency": 0.7064872346705773,
-   "transfer_uptake": 0.5868773339283688,
+   "transfer_uptake": 0.5499428571428572,
    "patch": {
     "none": [
      0.02666666666666667,
@@ -1223,10 +1223,10 @@
   "RAGBench (held-out sub-datasets)": {
    "sufficiency": 0.7174118225353359,
    "matched": 0.8720384783259035,
-   "uptake": 0.6961852093345247,
-   "correction": 0.7843073298565938,
+   "uptake": 0.5960553562450468,
+   "correction": 0.7192979590725657,
    "transfer_sufficiency": 0.7064872346705773,
-   "transfer_uptake": 0.5868773339283688
+   "transfer_uptake": 0.5499428571428572
   },
   "Synthetic": {
    "sufficiency": 0.9645219389732418,

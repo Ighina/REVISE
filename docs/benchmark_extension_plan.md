@@ -61,3 +61,10 @@ Estimated cost: HotpotQA and RAGBench collection about one GPU-hour each per mod
 4. Retrieval layer + retrieved-evidence trajectories for MuSiQue and HotpotQA.
 5. Paraphrase and independent-source layers.
 6. ESTB assembly and the MuSiQue-trained → ESTB evaluation; replicate on Llama and Mistral for the ESTB run only.
+
+
+## Status (2026-10-01)
+
+Done: HotpotQA, RAGBench (with LLM-judge rescoring), synthetic; ESTB retrieval layer (wiki-18 corpus, BM25 index, E5 FAISS index, decomposition-aware multi-query retrieval; gold coverage both hops 40% with E5 multi-query); retrieved-distractor and fully-retrieved runs for E5 and BM25; LLM paraphrase / partial variants and cross-dataset independent sources; cell-wise ESTB evaluation (`revise/analysis/estb.py`, `Paper/figures/make_estb_table.py`) with source-train questions excluded from transfer scores. Results are in `Paper/tables/estb.tex` and `estb_quality.tex` and in the paper's external-validity section.
+
+Not done: Llama/Mistral replication on the external and ESTB sources; NQ/TriviaQA.

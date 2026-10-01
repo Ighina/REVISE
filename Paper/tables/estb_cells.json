@@ -1,0 +1,1224 @@
+{
+ "musique2hop_qwen7b": [
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "all",
+   "cell": "all",
+   "n": 10353,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9484690057817288,
+   "auc_own_probe": 0.9484690057817287
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C1 irrelevant",
+   "n": 1827,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9453751113340038,
+   "auc_own_probe": 0.9453751113340038
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2 partial (hop)",
+   "n": 1218,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9961793675060194,
+   "auc_own_probe": 0.9961793675060194
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2+redundant",
+   "n": 1218,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9817333592176467,
+   "auc_own_probe": 0.9817333592176467
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 1218,
+   "pos_rate": null,
+   "auc_musique_dir": null,
+   "auc_own_probe": null
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+irrelevant",
+   "n": 609,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9884032883863018,
+   "auc_own_probe": 0.9884032883863018
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+redundant",
+   "n": 609,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9886796573564027,
+   "auc_own_probe": 0.9886796573564027
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 full context",
+   "n": 609,
+   "pos_rate": null,
+   "auc_musique_dir": 0.999618476007129,
+   "auc_own_probe": 0.999618476007129
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 complete+contradictory",
+   "n": 609,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9953920529765612,
+   "auc_own_probe": 0.9953920529765612
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 contradictory (synthetic)",
+   "n": 1218,
+   "pos_rate": null,
+   "auc_musique_dir": 0.7494479361304569,
+   "auc_own_probe": 0.7494479361304569
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C6 answer string, no relation",
+   "n": 1218,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9820474761446395,
+   "auc_own_probe": 0.9820474761446395
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 10353,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9484690057817288,
+   "auc_own_probe": 0.9484690057817287
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 10353,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9484690057817288,
+   "auc_own_probe": 0.9484690057817287
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "sufficiency",
+   "axis": "retrieval",
+   "cell": "benchmark",
+   "n": 10353,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9484690057817288,
+   "auc_own_probe": 0.9484690057817287
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "uptake",
+   "axis": "all",
+   "cell": "all",
+   "n": 1218,
+   "pos_rate": 0.47783251231527096,
+   "auc_musique_dir": 0.7747925176684173,
+   "auc_own_probe": 0.7747925176684173
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "uptake",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 1218,
+   "pos_rate": 0.47783251231527096,
+   "auc_musique_dir": 0.7747925176684173,
+   "auc_own_probe": 0.7747925176684173
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "uptake",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 1218,
+   "pos_rate": 0.47783251231527096,
+   "auc_musique_dir": 0.7747925176684173,
+   "auc_own_probe": 0.7747925176684173
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "uptake",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 1218,
+   "pos_rate": 0.47783251231527096,
+   "auc_musique_dir": 0.7747925176684173,
+   "auc_own_probe": 0.7747925176684173
+  },
+  {
+   "run": "musique2hop_qwen7b",
+   "task": "uptake",
+   "axis": "retrieval",
+   "cell": "benchmark",
+   "n": 1218,
+   "pos_rate": 0.47783251231527096,
+   "auc_musique_dir": 0.7747925176684173,
+   "auc_own_probe": 0.7747925176684173
+  }
+ ],
+ "musique2hop_qwen7b_e5_noise": [
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "all",
+   "cell": "all",
+   "n": 6494,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9352621912776513,
+   "auc_own_probe": 0.9505921011842023
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C1 irrelevant",
+   "n": 1146,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9063667845362426,
+   "auc_own_probe": 0.9715729431458863
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2 partial (hop)",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9959567994298402,
+   "auc_own_probe": 0.9959079918159837
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2+redundant",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.97915695841671,
+   "auc_own_probe": 0.9799739599479198
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": null,
+   "auc_own_probe": null
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+irrelevant",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9722081357418931,
+   "auc_own_probe": 0.9840659681319364
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+redundant",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9853896548888462,
+   "auc_own_probe": 0.982980965961932
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 full context",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9995134453551164,
+   "auc_own_probe": 0.9998139996279993
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 complete+contradictory",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.994017433732628,
+   "auc_own_probe": 0.9892739785479571
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 contradictory (synthetic)",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.7420249581974178,
+   "auc_own_probe": 0.7363754727509455
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C6 answer string, no relation",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9622132068748117,
+   "auc_own_probe": 0.981756463512927
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 6494,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9352621912776513,
+   "auc_own_probe": 0.9505921011842023
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 6494,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9352621912776513,
+   "auc_own_probe": 0.9505921011842023
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "sufficiency",
+   "axis": "retrieval",
+   "cell": "e5",
+   "n": 6494,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9352621912776513,
+   "auc_own_probe": 0.9505921011842023
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "uptake",
+   "axis": "all",
+   "cell": "all",
+   "n": 764,
+   "pos_rate": 0.4895287958115183,
+   "auc_musique_dir": 0.8170711641299877,
+   "auc_own_probe": 0.6962654570310072
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "uptake",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 764,
+   "pos_rate": 0.4895287958115183,
+   "auc_musique_dir": 0.8170711641299877,
+   "auc_own_probe": 0.6962654570310072
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "uptake",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 764,
+   "pos_rate": 0.4895287958115183,
+   "auc_musique_dir": 0.8170711641299877,
+   "auc_own_probe": 0.6962654570310072
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "uptake",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 764,
+   "pos_rate": 0.4895287958115183,
+   "auc_musique_dir": 0.8170711641299877,
+   "auc_own_probe": 0.6962654570310072
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_noise",
+   "task": "uptake",
+   "axis": "retrieval",
+   "cell": "e5",
+   "n": 764,
+   "pos_rate": 0.4895287958115183,
+   "auc_musique_dir": 0.8170711641299877,
+   "auc_own_probe": 0.6962654570310072
+  }
+ ],
+ "musique2hop_qwen7b_bm25_noise": [
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "all",
+   "cell": "all",
+   "n": 6494,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9390554900724578,
+   "auc_own_probe": 0.9569719139438279
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C1 irrelevant",
+   "n": 1146,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9170607074001991,
+   "auc_own_probe": 0.9816582966499267
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2 partial (hop)",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9961007099586087,
+   "auc_own_probe": 0.9970084940169881
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2+redundant",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9795133082974699,
+   "auc_own_probe": 0.9854144708289417
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": null,
+   "auc_own_probe": null
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+irrelevant",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9733148762369451,
+   "auc_own_probe": 0.9923739847479695
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+redundant",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9859344590334694,
+   "auc_own_probe": 0.9924359848719697
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 full context",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9998766481181985,
+   "auc_own_probe": 1.0
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 complete+contradictory",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9940825361146899,
+   "auc_own_probe": 0.9962489924979849
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 contradictory (synthetic)",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.744546818892026,
+   "auc_own_probe": 0.7445904891809784
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C6 answer string, no relation",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9705600175433787,
+   "auc_own_probe": 0.9872589745179491
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 6494,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9390554900724578,
+   "auc_own_probe": 0.9569719139438279
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 6494,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9390554900724578,
+   "auc_own_probe": 0.9569719139438279
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "sufficiency",
+   "axis": "retrieval",
+   "cell": "bm25",
+   "n": 6494,
+   "pos_rate": 0.11764705882352941,
+   "auc_musique_dir": 0.9390554900724578,
+   "auc_own_probe": 0.9569719139438279
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "uptake",
+   "axis": "all",
+   "cell": "all",
+   "n": 764,
+   "pos_rate": 0.4869109947643979,
+   "auc_musique_dir": 0.8171562980030723,
+   "auc_own_probe": 0.6838376934070715
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "uptake",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 764,
+   "pos_rate": 0.4869109947643979,
+   "auc_musique_dir": 0.8171562980030723,
+   "auc_own_probe": 0.6838376934070715
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "uptake",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 764,
+   "pos_rate": 0.4869109947643979,
+   "auc_musique_dir": 0.8171562980030723,
+   "auc_own_probe": 0.6838376934070715
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "uptake",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 764,
+   "pos_rate": 0.4869109947643979,
+   "auc_musique_dir": 0.8171562980030723,
+   "auc_own_probe": 0.6838376934070715
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_noise",
+   "task": "uptake",
+   "axis": "retrieval",
+   "cell": "bm25",
+   "n": 764,
+   "pos_rate": 0.4869109947643979,
+   "auc_musique_dir": 0.8171562980030723,
+   "auc_own_probe": 0.6838376934070715
+  }
+ ],
+ "musique2hop_qwen7b_e5_full": [
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "all",
+   "cell": "all",
+   "n": 2186,
+   "pos_rate": 0.11802378774016468,
+   "auc_musique_dir": 0.9054830486667309,
+   "auc_own_probe": 0.9263992152003304
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C1 irrelevant",
+   "n": 387,
+   "pos_rate": null,
+   "auc_musique_dir": 0.8443502994611702,
+   "auc_own_probe": 0.8892746913580247
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2 partial (hop)",
+   "n": 258,
+   "pos_rate": null,
+   "auc_musique_dir": 0.997145604230515,
+   "auc_own_probe": 0.9994212962962963
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2+redundant",
+   "n": 258,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9654918574604892,
+   "auc_own_probe": 0.9795524691358026
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 258,
+   "pos_rate": null,
+   "auc_musique_dir": null,
+   "auc_own_probe": null
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+irrelevant",
+   "n": 129,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9166816898022955,
+   "auc_own_probe": 0.9949845679012346
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+redundant",
+   "n": 129,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9751216873985938,
+   "auc_own_probe": 0.9972993827160493
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 full context",
+   "n": 129,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9949221801574425,
+   "auc_own_probe": 1.0
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 complete+contradictory",
+   "n": 127,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9839162546542148,
+   "auc_own_probe": 0.998015873015873
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 contradictory (synthetic)",
+   "n": 253,
+   "pos_rate": null,
+   "auc_musique_dir": 0.713071054324846,
+   "auc_own_probe": 0.6568857589984352
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C6 answer string, no relation",
+   "n": 258,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9104470885163152,
+   "auc_own_probe": 0.9803240740740741
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 2186,
+   "pos_rate": 0.11802378774016468,
+   "auc_musique_dir": 0.9054830486667309,
+   "auc_own_probe": 0.9263992152003304
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 2186,
+   "pos_rate": 0.11802378774016468,
+   "auc_musique_dir": 0.9054830486667309,
+   "auc_own_probe": 0.9263992152003304
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "sufficiency",
+   "axis": "retrieval",
+   "cell": "e5",
+   "n": 2186,
+   "pos_rate": 0.11802378774016468,
+   "auc_musique_dir": 0.9054830486667309,
+   "auc_own_probe": 0.9263992152003304
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "uptake",
+   "axis": "all",
+   "cell": "all",
+   "n": 258,
+   "pos_rate": 0.41472868217054265,
+   "auc_musique_dir": 0.7618988673639909,
+   "auc_own_probe": 0.9328185328185328
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "uptake",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 258,
+   "pos_rate": 0.41472868217054265,
+   "auc_musique_dir": 0.7618988673639909,
+   "auc_own_probe": 0.9328185328185328
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "uptake",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 258,
+   "pos_rate": 0.41472868217054265,
+   "auc_musique_dir": 0.7618988673639909,
+   "auc_own_probe": 0.9328185328185328
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "uptake",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 258,
+   "pos_rate": 0.41472868217054265,
+   "auc_musique_dir": 0.7618988673639909,
+   "auc_own_probe": 0.9328185328185328
+  },
+  {
+   "run": "musique2hop_qwen7b_e5_full",
+   "task": "uptake",
+   "axis": "retrieval",
+   "cell": "e5",
+   "n": 258,
+   "pos_rate": 0.41472868217054265,
+   "auc_musique_dir": 0.7618988673639909,
+   "auc_own_probe": 0.9328185328185328
+  }
+ ],
+ "musique2hop_qwen7b_bm25_full": [
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "all",
+   "cell": "all",
+   "n": 1134,
+   "pos_rate": 0.11816578483245149,
+   "auc_musique_dir": 0.9097761194029851,
+   "auc_own_probe": 0.895271049596309
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C1 irrelevant",
+   "n": 201,
+   "pos_rate": null,
+   "auc_musique_dir": 0.8402391029925003,
+   "auc_own_probe": 0.9158016147635525
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2 partial (hop)",
+   "n": 134,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9966028068612164,
+   "auc_own_probe": 0.9160899653979239
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2+redundant",
+   "n": 134,
+   "pos_rate": null,
+   "auc_musique_dir": 0.976052572956115,
+   "auc_own_probe": 0.9247404844290658
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 134,
+   "pos_rate": null,
+   "auc_musique_dir": null,
+   "auc_own_probe": null
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+irrelevant",
+   "n": 67,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9364000891067052,
+   "auc_own_probe": 0.944636678200692
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+redundant",
+   "n": 67,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9803965248384942,
+   "auc_own_probe": 0.8979238754325259
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 full context",
+   "n": 67,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9968812653152149,
+   "auc_own_probe": 0.9653979238754326
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 complete+contradictory",
+   "n": 65,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9903559127439724,
+   "auc_own_probe": 0.9048442906574394
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 contradictory (synthetic)",
+   "n": 131,
+   "pos_rate": null,
+   "auc_musique_dir": 0.716987581178079,
+   "auc_own_probe": 0.698961937716263
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C6 answer string, no relation",
+   "n": 134,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9181889062151927,
+   "auc_own_probe": 0.944636678200692
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 1134,
+   "pos_rate": 0.11816578483245149,
+   "auc_musique_dir": 0.9097761194029851,
+   "auc_own_probe": 0.895271049596309
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 1134,
+   "pos_rate": 0.11816578483245149,
+   "auc_musique_dir": 0.9097761194029851,
+   "auc_own_probe": 0.895271049596309
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "sufficiency",
+   "axis": "retrieval",
+   "cell": "bm25",
+   "n": 1134,
+   "pos_rate": 0.11816578483245149,
+   "auc_musique_dir": 0.9097761194029851,
+   "auc_own_probe": 0.895271049596309
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "uptake",
+   "axis": "all",
+   "cell": "all",
+   "n": 134,
+   "pos_rate": 0.5149253731343284,
+   "auc_musique_dir": 0.8202898550724638,
+   "auc_own_probe": 0.8421052631578948
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "uptake",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 134,
+   "pos_rate": 0.5149253731343284,
+   "auc_musique_dir": 0.8202898550724638,
+   "auc_own_probe": 0.8421052631578948
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "uptake",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 134,
+   "pos_rate": 0.5149253731343284,
+   "auc_musique_dir": 0.8202898550724638,
+   "auc_own_probe": 0.8421052631578948
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "uptake",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 134,
+   "pos_rate": 0.5149253731343284,
+   "auc_musique_dir": 0.8202898550724638,
+   "auc_own_probe": 0.8421052631578948
+  },
+  {
+   "run": "musique2hop_qwen7b_bm25_full",
+   "task": "uptake",
+   "axis": "retrieval",
+   "cell": "bm25",
+   "n": 134,
+   "pos_rate": 0.5149253731343284,
+   "auc_musique_dir": 0.8202898550724638,
+   "auc_own_probe": 0.8421052631578948
+  }
+ ],
+ "musique2hop_qwen7b_variants": [
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "all",
+   "cell": "all",
+   "n": 8125,
+   "pos_rate": 0.1872,
+   "auc_musique_dir": 0.9294548240641517,
+   "auc_own_probe": 0.9434679270396176
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C1 irrelevant",
+   "n": 1146,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9411410698160596,
+   "auc_own_probe": 0.9416907045035212
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2 partial (hop)",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9956507670965988,
+   "auc_own_probe": 0.9998596710064708
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2 partial (masked)",
+   "n": 436,
+   "pos_rate": null,
+   "auc_musique_dir": 0.7360832142060089,
+   "auc_own_probe": 0.809178290091783
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C2+redundant",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9779896458309667,
+   "auc_own_probe": 0.9816246979028611
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": null,
+   "auc_own_probe": null
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C3 complete (independent)",
+   "n": 64,
+   "pos_rate": null,
+   "auc_musique_dir": null,
+   "auc_own_probe": null
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C3 complete (paraphrase)",
+   "n": 693,
+   "pos_rate": null,
+   "auc_musique_dir": null,
+   "auc_own_probe": null
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+independent",
+   "n": 57,
+   "pos_rate": null,
+   "auc_musique_dir": 0.950263561599594,
+   "auc_own_probe": 0.995205836373111
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+irrelevant",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9803122773320115,
+   "auc_own_probe": 0.9974428938956887
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+paraphrase",
+   "n": 381,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9518534049121573,
+   "auc_own_probe": 0.9741631305987741
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 complete+redundant",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.983503206419034,
+   "auc_own_probe": 0.9994074998050986
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C4 full context",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9993511433302009,
+   "auc_own_probe": 1.0
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 complete+contradictory",
+   "n": 382,
+   "pos_rate": null,
+   "auc_musique_dir": 0.9943857547562743,
+   "auc_own_probe": 0.9997349341233336
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C5 contradictory (synthetic)",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.7251136790001067,
+   "auc_own_probe": 0.7623528494581742
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "quality",
+   "cell": "C6 answer string, no relation",
+   "n": 764,
+   "pos_rate": null,
+   "auc_musique_dir": 0.979300267459752,
+   "auc_own_probe": 0.974678412723162
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 8125,
+   "pos_rate": 0.1872,
+   "auc_musique_dir": 0.9294548240641517,
+   "auc_own_probe": 0.9434679270396176
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 8125,
+   "pos_rate": 0.1872,
+   "auc_musique_dir": 0.9294548240641517,
+   "auc_own_probe": 0.9434679270396176
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "sufficiency",
+   "axis": "retrieval",
+   "cell": "benchmark",
+   "n": 8125,
+   "pos_rate": 0.1872,
+   "auc_musique_dir": 0.9294548240641517,
+   "auc_own_probe": 0.9434679270396176
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "uptake",
+   "axis": "all",
+   "cell": "all",
+   "n": 1521,
+   "pos_rate": 0.4898093359631821,
+   "auc_musique_dir": 0.7959973707880715,
+   "auc_own_probe": 0.6819935993975903
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "uptake",
+   "axis": "quality",
+   "cell": "C3 complete",
+   "n": 764,
+   "pos_rate": 0.4816753926701571,
+   "auc_musique_dir": 0.8148399758454106,
+   "auc_own_probe": 0.687643946467476
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "uptake",
+   "axis": "quality",
+   "cell": "C3 complete (independent)",
+   "n": 64,
+   "pos_rate": 0.46875,
+   "auc_musique_dir": 0.7294117647058824,
+   "auc_own_probe": 0.7904761904761904
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "uptake",
+   "axis": "quality",
+   "cell": "C3 complete (paraphrase)",
+   "n": 693,
+   "pos_rate": 0.5007215007215007,
+   "auc_musique_dir": 0.7819376655394713,
+   "auc_own_probe": 0.6775579076545483
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "uptake",
+   "axis": "domain",
+   "cell": "wikipedia",
+   "n": 1521,
+   "pos_rate": 0.4898093359631821,
+   "auc_musique_dir": 0.7959973707880715,
+   "auc_own_probe": 0.6819935993975903
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "uptake",
+   "axis": "n_hops",
+   "cell": "2",
+   "n": 1521,
+   "pos_rate": 0.4898093359631821,
+   "auc_musique_dir": 0.7959973707880715,
+   "auc_own_probe": 0.6819935993975903
+  },
+  {
+   "run": "musique2hop_qwen7b_variants",
+   "task": "uptake",
+   "axis": "retrieval",
+   "cell": "benchmark",
+   "n": 1521,
+   "pos_rate": 0.4898093359631821,
+   "auc_musique_dir": 0.7959973707880715,
+   "auc_own_probe": 0.6819935993975903
+  }
+ ]
+}
