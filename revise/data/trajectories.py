@@ -121,7 +121,7 @@ def build_trajectories(q: Question, false_answer_pool: Dict[str, List[str]], see
         cid = _cid(pars)
         if cid in conds:
             return conds[cid]
-        gold_hops = sorted({p.hop for p in pars if p.role in ("gold", "paraphrase")})   # a paraphrase supplies the hop too
+        gold_hops = sorted({p.hop for p in pars if p.role in ("gold", "paraphrase", "independent")})   # variants supply the hop too
         false_hops = {p.hop for p in pars if p.role == "false"}
         c = Condition(
             cid=cid, qid=q.qid, name=name, paragraphs=list(pars),
@@ -207,6 +207,9 @@ def build_trajectories(q: Question, false_answer_pool: Dict[str, List[str]], see
         if "paraphrase" in v:      # same fact, different wording: crosses sufficiency
             pars, pos = _insert(S.paragraphs, [v["paraphrase"]], rng)
             add_inc("decisive_paraphrase", S, add_cond("sufficient_min_paraphrase", pars, order_tag, pos), [v["paraphrase"]], order_tag, group)
+        if "independent" in v:     # independently authored statement of the same hop: crosses sufficiency
+            pars, pos = _insert(S.paragraphs, [v["independent"]], rng)
+            add_inc("decisive_independent", S, add_cond("sufficient_min_independent", pars, order_tag, pos), [v["independent"]], order_tag, group)
         if "partial" in v:         # subject and relation mentioned, value withheld: stays insufficient
             pars, pos = _insert(S.paragraphs, [v["partial"]], rng)
             add_inc("partial", S, add_cond("penultimate_plus_partial", pars, order_tag, pos), [v["partial"]], order_tag, group)
@@ -251,11 +254,13 @@ def build_trajectories(q: Question, false_answer_pool: Dict[str, List[str]], see
             pars, pos = _insert(S.paragraphs, [d], rng)
             add_inc("post_distractor", S, add_cond("sufficient_plus_distractor", pars, "canonical", pos), [d], "canonical", group)
         gv = _variants(q)
-        for gk, v in gv.items():        # paraphrastic redundancy after sufficiency
-            if "paraphrase" in v:
-                pars, pos = _insert(S.paragraphs, [v["paraphrase"]], rng)
-                add_inc("post_redundant_paraphrase", S, add_cond("sufficient_plus_paraphrase", pars, "canonical", pos), [v["paraphrase"]], "canonical", group)
-                break
+        for kind, inc_kind, cname in (("paraphrase", "post_redundant_paraphrase", "sufficient_plus_paraphrase"),
+                                      ("independent", "post_redundant_independent", "sufficient_plus_independent")):
+            for gk, v in gv.items():    # paraphrastic / independent-source redundancy after sufficiency
+                if kind in v:
+                    pars, pos = _insert(S.paragraphs, [v[kind]], rng)
+                    add_inc(inc_kind, S, add_cond(cname, pars, "canonical", pos), [v[kind]], "canonical", group)
+                    break
         r = redundant_copy(rng.choice(q.gold))
         pars, pos = _insert(S.paragraphs, [r], rng)
         add_inc("post_redundant", S, add_cond("sufficient_plus_redundant", pars, "canonical", pos), [r], "canonical", group)

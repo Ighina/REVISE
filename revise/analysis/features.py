@@ -22,7 +22,7 @@ from revise.store import ActivationStore
 
 log = logging.getLogger(__name__)
 
-DECISIVE_KINDS = ("decisive", "loo_decisive", "decisive_paraphrase")
+DECISIVE_KINDS = ("decisive", "loo_decisive", "decisive_paraphrase", "decisive_independent")
 
 
 def _relevance(question: str, texts: List[str]) -> List[float]:
