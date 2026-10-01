@@ -157,6 +157,7 @@ class E5Retriever:
                                 break
                             out.write(chunk)
         log.info("loading FAISS index (this maps ~65 GB)")
+        faiss.omp_set_num_threads(min(32, os.cpu_count() or 8))   # OpenBLAS cannot handle 256 threads
         self.index = faiss.read_index(str(idx), faiss.IO_FLAG_MMAP)
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.tok = AutoTokenizer.from_pretrained("intfloat/e5-base-v2")
@@ -212,22 +213,55 @@ def label_passages(q: Question, passages: List[dict]) -> List[dict]:
     return out
 
 
+def question_queries(q: Question) -> List[str]:
+    """The question plus one query per reasoning hop with bridge entities filled in
+    (what an iterative / decomposing RAG system would issue)."""
+    queries = [q.question]
+    subs = [d["answer"] for d in q.decomposition]
+    for h, d in enumerate(q.decomposition):
+        text = d["question"]
+        for k in range(h):
+            text = text.replace(f"#{k + 1}", subs[k])
+        text = text.replace(">>", " ").strip()
+        if text and text.lower() != q.question.lower():
+            queries.append(text)
+    return queries
+
+
+def merge_hits(per_query: List[List[Tuple[int, float]]], k: int) -> List[Tuple[int, float, int]]:
+    """Round-robin merge by rank across queries, de-duplicated: returns (idx, score, source_query)."""
+    seen, out = set(), []
+    for r in range(max(len(h) for h in per_query)):
+        for qi, h in enumerate(per_query):
+            if r < len(h) and h[r][0] not in seen:
+                seen.add(h[r][0]); out.append((h[r][0], h[r][1], qi))
+            if len(out) >= k:
+                return out
+    return out
+
+
 def retrieve_for_questions(questions: Sequence[Question], method: str, k: int, out_path: Path,
-                           corpus: Optional[WikiCorpus] = None) -> None:
-    """Write ``{qid, method, passages: [...]}`` rows; resumable."""
+                           corpus: Optional[WikiCorpus] = None, multi_query: bool = True) -> None:
+    """Write ``{qid, method, passages: [...]}`` rows; resumable.  With ``multi_query`` each
+    question issues the question plus its decomposition sub-queries and the hit lists are merged."""
     done = {r["qid"] for r in read_jsonl(out_path)} if out_path.exists() else set()
     todo = [q for q in questions if q.qid not in done]
     if not todo:
         return
     corpus = corpus or WikiCorpus()
     retr = BM25Retriever(corpus) if method == "bm25" else E5Retriever(corpus)
-    for b in range(0, len(todo), 256):
-        batch = todo[b:b + 256]
-        hits = retr.search([q.question for q in batch], k=k)
-        for q, h in zip(batch, hits):
-            passages = [{**corpus.passage(i), "score": s, "rank": r} for r, (i, s) in enumerate(h)]
-            append_jsonl(out_path, {"qid": q.qid, "method": method, "passages": label_passages(q, passages)})
-        log.info("retrieved %d/%d", min(b + 256, len(todo)), len(todo))
+    for b in range(0, len(todo), 128):
+        batch = todo[b:b + 128]
+        qlists = [question_queries(q) if multi_query else [q.question] for q in batch]
+        flat = [x for ql in qlists for x in ql]
+        hits = retr.search(flat, k=k)
+        pos = 0
+        for q, ql in zip(batch, qlists):
+            per_query = hits[pos:pos + len(ql)]; pos += len(ql)
+            merged = merge_hits(per_query, k)
+            passages = [{**corpus.passage(i), "score": s, "rank": r, "query": qi} for r, (i, s, qi) in enumerate(merged)]
+            append_jsonl(out_path, {"qid": q.qid, "method": method, "queries": ql, "passages": label_passages(q, passages)})
+        log.info("retrieved %d/%d", min(b + 128, len(todo)), len(todo))
 
 
 def apply_retrieved(q: Question, row: dict, mode: str = "noise", n_distractors: int = 18) -> Optional[Question]:
