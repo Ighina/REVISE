@@ -56,19 +56,42 @@ class WikiCorpus:
         else:
             src = _hub_file("PeterJinGo/wiki-18-corpus", "wiki-18.jsonl.gz")
             ids, titles, texts = [], [], []
-            with gzip.open(src, "rt") as f:
-                for n, line in enumerate(f):
-                    if max_passages and n >= max_passages:
-                        break
-                    r = json.loads(line)
-                    title, text = self._split(r)
-                    ids.append(str(r.get("id", n))); titles.append(title); texts.append(text)
-                    if n % 2_000_000 == 0:
-                        log.info("corpus parse: %d passages", n)
+            for n, line in enumerate(self._iter_lines(src)):
+                if max_passages and n >= max_passages:
+                    break
+                r = json.loads(line)
+                title, text = self._split(r)
+                ids.append(str(r.get("id", n))); titles.append(title); texts.append(text)
+                if n % 2_000_000 == 0:
+                    log.info("corpus parse: %d passages", n)
             self.ids, self.titles, self.texts = np.array(ids, dtype=object), np.array(titles, dtype=object), np.array(texts, dtype=object)
             if not max_passages:
                 np.savez(cache, ids=self.ids, titles=self.titles, texts=self.texts)
         log.info("wiki-18 corpus: %d passages", len(self.ids))
+
+    @staticmethod
+    def _iter_lines(src: Path) -> Iterable[str]:
+        """The Hub file is a gzipped tar containing one JSONL member (FlashRAG dump);
+        fall back to plain gzipped JSONL."""
+        import io, tarfile
+        with open(src, "rb") as fh:
+            head = fh.read(2)
+        with gzip.open(src, "rb") as g:
+            probe = g.read(512)
+        if b"ustar" in probe:
+            with tarfile.open(src, mode="r|gz") as tar:
+                for m in tar:
+                    if m.isfile():
+                        f = tar.extractfile(m)
+                        for raw in f:          # streaming member: iterate raw lines
+                            line = raw.decode("utf-8", errors="replace")
+                            if line.strip():
+                                yield line
+        else:
+            with gzip.open(src, "rt", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip():
+                        yield line
 
     @staticmethod
     def _split(r: dict) -> Tuple[str, str]:
