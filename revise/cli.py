@@ -10,7 +10,7 @@ import time
 from revise import config as _cfg  # noqa: F401
 from revise.experiment import Run, load_config
 
-STAGES = ["screen", "collect", "conversational", "features", "probes", "transfer", "steer", "patch", "adaptive", "ablate", "text_baseline", "closedbook", "report", "all"]
+STAGES = ["screen", "collect", "conversational", "features", "probes", "transfer", "steer", "patch", "adaptive", "ablate", "text_baseline", "closedbook", "retrieve", "report", "all"]
 
 
 def _setup_logging(run: Run) -> None:
@@ -93,6 +93,10 @@ def main(argv=None) -> None:
     if stage == "ablate":
         from revise.run.ablate import run_ablate
         run_ablate(cfg, backend=be())
+    if stage == "retrieve":
+        from revise.data.retrieval import retrieve_for_questions
+        rcfg = cfg["data"].get("retrieval") or {"method": "bm25", "k": 20}
+        retrieve_for_questions(run.questions(), rcfg["method"], rcfg.get("k", 20), run.dir / f"retrieved_{rcfg['method']}.jsonl")
     if stage == "closedbook":
         from revise.run.closedbook import run_closedbook
         run_closedbook(cfg, backend=be())

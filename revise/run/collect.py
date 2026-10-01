@@ -105,6 +105,15 @@ def run_screen(cfg: dict, backend: Optional[HFBackend] = None) -> Run:
     selected = selected[: d["n_questions"]]
     log.info("selected %d / %d questions (closed-book accuracy %.3f)", len(selected), len(pool),
              np.mean([screen[q.qid]["correct"] for q in pool]))
+    rcfg = d.get("retrieval")
+    if rcfg:   # ESTB retrieval-source axis: swap benchmark distractors (and optionally gold) for retrieved passages
+        from revise.data.retrieval import apply_retrieved, retrieve_for_questions
+        rpath = run.dir / f"retrieved_{rcfg['method']}.jsonl"
+        retrieve_for_questions(selected, rcfg["method"], rcfg.get("k", 20), rpath)
+        rows = {r["qid"]: r for r in read_jsonl(rpath)}
+        swapped = [apply_retrieved(q, rows[q.qid], rcfg.get("mode", "noise"), rcfg.get("n_distractors", 18)) for q in selected if q.qid in rows]
+        selected = [q for q in swapped if q is not None]
+        log.info("retrieval (%s, mode=%s): %d questions usable", rcfg["method"], rcfg.get("mode", "noise"), len(selected))
     write_jsonl(run.questions_path, (q.to_json() for q in selected))
     conds, incs = build_all(selected, seed=d["seed"], n_random_perms=d["n_random_perms"],
                             include_full=d["include_full"], include_loo=d["include_loo"])
