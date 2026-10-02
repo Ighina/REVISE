@@ -1,0 +1,5 @@
+\section{Adaptive retrieval}
+\label{app:adaptive}
+\paragraph{Setup.} Each held-out question is walked along its canonical trajectory (distractors, then $+g_1$, \dots, the minimal sufficient context, then $+$distractor), one retrieval round per stage. The probe policy reads the pre-generation state-sufficiency score $v^\top h$ at each stage and stops when it exceeds a threshold set to $0.97$ precision on training questions. Baselines: a behavioural rule (stop at the first stage where the model does not answer INSUFFICIENT), a next-token-entropy threshold, an oracle (stop at the minimal sufficient stage) and the full context. We report accuracy at the stopping stage, mean rounds and prompt tokens. The simulation uses stored activations and behaviour only; it needs no new forward passes.
+
+\paragraph{Results (Qwen).} On \musique{}: probe policy $0.442$ accuracy, $2.87$ rounds, $381$ prompt tokens; behavioural rule $0.460$, $3.09$, $402$; entropy $0.404$, $3.92$; oracle $0.475$, $3.00$; full context $0.404$, $4.00$. On HotpotQA: probe $0.707$ in $2.90$ rounds; behavioural $0.650$ in $2.53$; entropy $0.685$ in $3.99$; oracle $0.740$ in $3.00$.

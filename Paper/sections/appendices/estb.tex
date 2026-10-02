@@ -1,0 +1,167 @@
+\section{The Evidence State Transition Benchmark}
+\label{app:estb}
+
+The Evidence State Transition Benchmark (ESTB) tests whether the evidence-state readout and its causal profile, established on \musique{} trajectories in \cref{sec:readout,sec:causal}, survive controlled changes to the evidence. It puts all of our sources under one labelling scheme and one evaluation protocol. This appendix describes what the benchmark measures, how each axis was built, and the full results of the retrieval-source and linguistic-form runs, which appear only in summary in \cref{sec:external}.
+
+\subsection{What the benchmark measures}
+\label{app:estb-measures}
+
+\paragraph{Unit of measurement.} As in the rest of the paper, the unit is an \emph{evidence state transition}: an increment $C_{k-1}\to C_k$ that adds one paragraph (or, for post-sufficiency and full-context increments, a set of paragraphs) to the context, with the paired update $\Delta h=h(C_k)-h(C_{k-1})$ read at the answer-start anchor. ESTB annotates every increment with the \emph{quality state} of the evidence it adds (\cref{tab:estb-states}) and with the values of the other axes (\cref{tab:estb-axes}): retrieval source, linguistic form, domain, question type, hop count and closed-book status.
+
+\paragraph{Labels.} Each increment carries the sufficiency label $y^{\mathrm{suff}}=\mathbf 1[C_k\text{ sufficient},\,C_{k-1}\text{ not}]$, which is defined by construction from the gold hops and does not depend on the model, and a behavioural uptake label for increments that cross sufficiency (answer becomes correct or not). An increment crosses sufficiency exactly when it supplies the last missing hop, whether in the original wording (C3), paraphrased, or from an independently authored source.
+
+\paragraph{Measurements per cell.} A \emph{cell} is the set of increments of one run that share one value on one axis (for example, ``E5-retrieved distractors, quality state C1''). For every cell we report:
+\begin{enumerate}
+  \item \textbf{Within-run readout:} the test AUROC of the run's own held-out probe (trained on the run's training questions), for sufficiency, matched sufficiency and uptake. This is the ceiling: is the state linearly decodable at all under this kind of evidence?
+  \item \textbf{Transfer without retraining:} the AUROC of the Qwen \musique{} two-hop direction (document split, at its best layer), applied unchanged. Because the ESTB runs sample from the same \musique{} pool as the source run, 818 of the 1{,}200 questions in the benchmark-gold runs (273 of 402 and 152 of 219 in the fully retrieved runs) are in the source probe's training split. These questions are \emph{excluded} from every transfer score, so transfer is measured only on questions the source probe never saw.
+  \item \textbf{Quality-state separability:} for each quality state $Q$, the AUROC separating $Q$'s increments (negatives) from the decisive increments of the same run (positives). Near $1$, the readout cleanly distinguishes $Q$ from completing the evidence; lower values mean that $Q$ looks like sufficiency to the probe.
+  \item \textbf{Causal profile:} on 150 held-out questions, the answered rate of the insufficient prompt unpatched, with the full sufficient anchor residual patched in, and with only the probe-direction component ($\parallel v$) patched in, all at every layer from the best one onward; and the answered rate of sufficient prompts after projecting $\vdm$ to its insufficient-state value (\cref{sec:causal}).
+\end{enumerate}
+The benchmark therefore separates three questions: whether the state is \emph{present} (1), whether it is the \emph{same} state as on \musique{} (2, 3), and whether its causal profile, an inert probe direction alongside a causally sufficient anchor and a $\vdm$ abstention gate, carries over (4).
+
+\paragraph{What the benchmark does not measure.} ESTB does not score answer quality or retrieval quality for their own sake: retrieval and paraphrasing only vary the evidence that enters a trajectory. It does not ask whether the model \emph{should} answer from partial or contradictory evidence; those states are scored by whether the readout separates them from genuine completion. The sufficiency label is structural (all hops present) rather than semantic, so a passage that happens to state a fact in a way our string-based labelling misses (\cref{app:estb-limits}) is counted as insufficient.
+
+\subsection{Evidence quality states}
+\label{app:estb-quality}
+
+\Cref{tab:estb-states} lists the seven quality states of the review's evidence-quality axis and the increment kinds (\cref{app:conditions}) that realise them. All states except C0 are increments, i.e.\ transitions \emph{into} the state from the preceding context.
+
+\begin{table}[h]
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llp{6.4cm}c}
+\toprule
+State & Name & Increment kinds (added evidence) & $y^{\mathrm{suff}}$ \\
+\midrule
+C0 & none & no evidence (start state of every trajectory) & -- \\
+C1 & irrelevant & \texttt{distractor\_from\_none}, \texttt{distractor}: a length-matched distractor added to an empty or penultimate context & 0 \\
+C2 & partial & \texttt{gold\_nondecisive}: a gold hop that leaves another hop missing; \texttt{partial}: the decisive paragraph rewritten to withhold its value; \texttt{redundant} from a penultimate state (C2+redundant) & 0 \\
+C3 & complete & \texttt{decisive}, \texttt{loo\_decisive}: the last missing hop; \texttt{decisive\_paraphrase}, \texttt{decisive\_independent}: the same hop paraphrased or from an independent source & 1 \\
+C4 & complete + redundant & \texttt{post\_distractor}, \texttt{post\_redundant}, \texttt{post\_redundant\_paraphrase}, \texttt{post\_redundant\_independent}, \texttt{full\_context}: further evidence added after sufficiency & 0 \\
+C5 & contradictory & \texttt{false}: the decisive hop with its value replaced (from a penultimate state); \texttt{post\_false}: a falsified copy added to a sufficient context & 0 \\
+C6 & answer string, no relation & \texttt{answer\_ctrl}: a distractor with ``(Not to be confused with \{answer\}.)'' appended & 0 \\
+\bottomrule
+\end{tabular}
+\caption{ESTB evidence-quality states and the increment kinds that realise them. $y^{\mathrm{suff}}$: whether the increment crosses into sufficiency.}
+\label{tab:estb-states}
+\end{table}
+
+The contradictory state has two sources. On benchmark and retrieved trajectories, the false value is another question's sub-answer of the same relation type (\texttt{false\_synthetic}); on the synthetic benchmark, it is a generated value of the same type. The tables label the first kind ``C5 contradictory (synthetic)'' because the false value is substituted rather than found in a real document; naturally occurring contradictions are not separated from \texttt{near\_miss} passages by our labelling (\cref{app:estb-limits}). Partial evidence is defined in two ways: for multi-hop questions, a gold hop that leaves another hop missing (``partial (hop)''); for any question, the decisive paragraph rewritten so that its subject and relation remain but the value is withheld (``partial (masked)'', \cref{app:estb-form}).
+
+\subsection{Axes and sources}
+\label{app:estb-axes}
+
+\begin{table}[h]
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lp{4.1cm}p{6.1cm}}
+\toprule
+Axis & Levels & Source (runs) \\
+\midrule
+Evidence quality & C0--C6 (\cref{tab:estb-states}) & every run \\
+Retrieval source & benchmark; BM25; E5 (dense); each as distractors only or as all evidence & \musique{} 2-hop rebuilt over wiki-18 (\cref{app:estb-retrieval}) \\
+Linguistic form & verbatim; LLM paraphrase; independently authored; templated (5 families) & \musique{} variants run (\cref{app:estb-form}); synthetic benchmark \\
+Domain & Wikipedia; biomedical; finance; technical; customer support; general web QA & \musique{}, HotpotQA, \twowiki{}; RAGBench's 12 sub-datasets \\
+Question type & bridge; comparison; single-hop & HotpotQA; RAGBench; synthetic \\
+Hop count & 1; 2; 3--4 & synthetic, RAGBench; \musique{} 2-hop; \musique{} 3--4-hop \\
+Closed-book status & correct; incorrect & HotpotQA and RAGBench (\texttt{select: all}) \\
+\bottomrule
+\end{tabular}
+\caption{ESTB axes. The domain, question-type, hop-count and closed-book axes reuse the external runs of \cref{sec:external}, scored per group in \cref{app:groups}; the retrieval-source and linguistic-form axes required new construction and are detailed here.}
+\label{tab:estb-axes}
+\end{table}
+
+All ESTB runs reported here use Qwen2.5-7B-Instruct and the pipeline of the main text without modification. The four retrieval runs and the variants run draw 1{,}200 two-hop \musique{} training questions that the model answers incorrectly closed-book, with no random hop permutations.
+
+\subsection{Retrieval-source axis}
+\label{app:estb-retrieval}
+
+\paragraph{Corpus and retrievers.} Evidence comes from wiki-18, the December 2018 Wikipedia dump released with FlashRAG: 21M passages of 100 words with their article titles. \emph{BM25} uses \texttt{bm25s} over title and text, with English stop-words and Snowball stemming. \emph{E5} uses the published FAISS flat inner-product index of \texttt{e5-base-v2} passage embeddings; queries are encoded with the \texttt{query:} prefix and mean pooling, then $\ell_2$-normalised.
+
+\paragraph{Queries.} A single question-level query rarely retrieves both hops of a bridge question. Each question therefore issues the question itself plus one query per hop, taken from \musique{}'s decomposition with the earlier hops' sub-answers substituted for the \texttt{\#k} placeholders (three queries per two-hop question). This imitates an iterative or decomposing RAG system that gets the earlier hops right. The per-query hit lists are merged round-robin by rank, de-duplicated, and cut at $k=30$ passages per question.
+
+\paragraph{Passage labels.} Each retrieved passage is labelled against the question's gold hops by title and string matching (titles normalised by lower-casing and removing a trailing parenthetical):
+\begin{itemize}
+  \item \texttt{retrieved\_gold}: the title matches a gold hop's page \emph{and} the passage contains that hop's sub-answer;
+  \item \texttt{same\_page}: the title matches a gold hop's page but the sub-answer is absent, i.e.\ partial evidence found in the wild;
+  \item \texttt{near\_miss}: not a gold page, but the passage mentions a bridge entity or the final answer, which is the natural analogue of the answer-string control C6;
+  \item \texttt{irrelevant}: everything else.
+\end{itemize}
+\Cref{tab:estb-retrieval} gives the label composition. E5 retrieves at least one gold passage for $85.5\%$ of questions and both hops for $33.5\%$; BM25 does so for $68.1\%$ and $18.3\%$.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{4}{c}{retrieved passages (top 30)} & \multicolumn{2}{c}{questions with gold for} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-7}
+Retriever & gold & same page & near miss & irrelevant & $\ge1$ hop & both hops \\
+\midrule
+E5 & 0.080 & 0.139 & 0.292 & 0.489 & 0.855 & 0.335 \\
+BM25 & 0.053 & 0.080 & 0.331 & 0.535 & 0.681 & 0.182 \\
+\midrule
+\multicolumn{7}{l}{Distractors used in the trajectories (18 per question): same page / near miss / irrelevant} \\
+E5 & \multicolumn{6}{l}{0.231 / 0.460 / 0.309} \\
+BM25 & \multicolumn{6}{l}{0.133 / 0.535 / 0.332} \\
+\bottomrule
+\end{tabular}
+\caption{Retrieved passages by label (1{,}200 \musique{} two-hop questions, multi-query retrieval, $k=30$).}
+\label{tab:estb-retrieval}
+\end{table}
+
+\paragraph{Trajectories.} Two modes turn retrieval output into trajectories.
+\begin{itemize}
+  \item \textbf{Retrieved distractors} (\emph{noise} mode): the benchmark gold paragraphs are kept and every distractor is replaced by a retrieved non-gold passage. The 18 distractors per question are taken hardest first: same-page passages, then near misses, then irrelevant passages, each in rank order. The trajectory builder then draws length-matched distractors from this pool exactly as it does from the benchmark pool. Distractors are thus no longer the benchmark's curated negatives but what a retriever returns for the same question, and nearly a quarter of E5's distractors come from the gold pages themselves.
+  \item \textbf{All evidence retrieved} (\emph{full} mode): the gold paragraph of each hop is also replaced, by the highest-ranked \texttt{retrieved\_gold} passage for that hop, so every paragraph the model sees is a 100-word wiki-18 passage. Only questions with a retrieved gold passage for both hops can be used: 402 for E5 and 219 for BM25.
+\end{itemize}
+Every other part of the construction (chains, controls, falsification, answer-string hatnotes, post-sufficiency and full-context increments) is unchanged, which yields the full set of quality states over retrieved evidence: 20{,}400 increments in each noise run, 6{,}809 (E5) and 3{,}703 (BM25) in the full runs.
+
+\subsection{Linguistic-form axis}
+\label{app:estb-form}
+
+\paragraph{LLM paraphrase and partial variants.} For every gold hop paragraph of the 1{,}200 questions, Qwen2.5-7B-Instruct generates two rewrites by greedy decoding (at most 220 tokens):
+\begin{itemize}
+  \item \emph{paraphrase}: ``Rewrite the following encyclopedia paragraph in completely different wording and sentence structure, keeping every fact exactly the same. You must keep the exact string `\{sub-answer\}' verbatim.''
+  \item \emph{partial}: ``Rewrite the following encyclopedia paragraph so that it still talks about `\{subject\}' and the same topic, but withholds the specific fact `\{sub-answer\}': do not mention `\{sub-answer\}' or any equivalent name or value anywhere; instead say that the detail is not recorded here.''
+\end{itemize}
+Generations are validated before use. A paraphrase is kept only if it contains the sub-answer, is between $0.5\times$ and $2\times$ the original's length, and shares fewer than $60\%$ of its word 4-grams with the original. A partial is kept only if it contains neither the sub-answer, nor the final answer, nor any answer alias, has at least 15 words, and still mentions the hop's subject. Of 2{,}400 hop paragraphs, 2{,}180 ($90.8\%$) yield a valid paraphrase and 1{,}411 ($58.8\%$) a valid partial.
+
+\paragraph{Independently authored sources.} \musique{}, HotpotQA and \twowiki{} all take paragraphs from Wikipedia, but from different dumps, with different paragraph boundaries and often different revisions. For each \musique{} gold hop with page title $T$ and sub-answer $a$, we search the gold and distractor paragraphs of the \emph{other} two datasets for one whose normalised title is $T$, that contains $a$, and that shares fewer than $60\%$ of its 4-grams with the \musique{} paragraph; when several qualify, the least overlapping is used. This finds an independently written statement of the same relation for 228 of the 2{,}400 hops (144 from HotpotQA, 84 from \twowiki{}).
+
+\paragraph{Increments.} From the penultimate state, the paraphrased and independent paragraphs give \texttt{decisive\_paraphrase} and \texttt{decisive\_independent} increments (C3, crossing sufficiency), and the partial paragraph gives a \texttt{partial} increment (C2, which does not). After sufficiency, the paraphrase or independent version of a hop already present gives \texttt{post\_redundant\_paraphrase} and \texttt{post\_redundant\_independent} increments (C4). Together with the standard kinds, the variants run has 25{,}632 increments, including 2{,}180 paraphrased decisive, 228 independent decisive and 1{,}411 partial ones.
+
+\paragraph{Synthetic templated form.} The synthetic benchmark (\cref{sec:external}) supplies the fully controlled end of the axis: fictional entities over seven relations (founder, birthplace, capital, spouse, award, employer, headquarters), five template families per relation, one to three hops, and for every gold fact a paraphrase, a partial (value withheld) and a contradictory (different value) variant, with near-miss distractors (same relation, other subject; same subject, other relation) and unrelated filler.
+
+\subsection{Results}
+\label{app:estb-results}
+
+\begin{table}[h]
+\centering\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\resizebox{\linewidth}{!}{\input{tables/estb}}
+\caption{Retrieval-source and linguistic-form axes (Qwen2.5-7B, \musique{} 2-hop). Within-run probes on the document split, except the two fully retrieved runs (question split, too few questions for document components). \musique{} direction: transfer without retraining, scored only on questions outside the source probe's training split. Answered rate: the insufficient prompt unpatched, with the full sufficient anchor, and with only the probe-direction component; and the sufficient prompt with $\vdm$ projected to its insufficient value.}
+\label{tab:estb}
+\end{table}
+
+\paragraph{Retrieval source.} With retrieved distractors (\cref{tab:estb}), within-run sufficiency is unchanged ($0.946$ E5, $0.951$ BM25, against $0.948$ with benchmark distractors), and the \musique{} direction transfers at $0.935$/$0.939$ on source-unseen questions. Retrieved distractors are harder than the benchmark's: the transferred direction separates C1 increments from decisive ones at $0.906$ (E5) and $0.917$ (BM25), against $0.945$ for benchmark distractors, and answer-string controls at $0.962$/$0.971$ against $0.982$. The run's own probe recovers most of this ($0.972$/$0.982$ for C1), so the drop is a shift in the distractor distribution rather than a loss of the state. Uptake falls within run ($0.68$, against $0.78$), but the transferred \musique{} uptake direction scores $0.817$ on the same increments: these runs have 1{,}200 rather than 2{,}000 questions, so the within-run probe is trained on fewer decisive increments, which is the likely reason. With all evidence retrieved, sufficiency stays at $0.91$--$0.92$ within run and $0.905$--$0.910$ transferred, and C1 separability is the lowest of any run ($0.84$ transferred, $0.89$--$0.92$ own), which is expected when every paragraph is a 100-word passage from the same corpus as the gold ones. In every retrieval cell the causal profile of \cref{sec:causal} reproduces: the full anchor patch raises answering from $0.10$--$0.30$ to $0.68$--$0.77$, the probe-direction component leaves it exactly at the unpatched rate, and projecting out $\vdm$ leaves $0.01$--$0.03$ answered.
+
+\begin{table}[h]
+\centering\small
+\input{tables/estb_quality}
+\caption{Quality-state separability (\musique{} variants run): AUROC separating each state's increments (negatives) from decisive increments (positives), with the run's own probe (test questions) and with the \musique{} direction (source-unseen questions). Lower values mean the state looks more like completing the evidence.}
+\label{tab:estb_quality}
+\end{table}
+
+\paragraph{Linguistic form.} Paraphrased and independently authored decisive paragraphs are read as completing the evidence just as the original wording is. Against all non-decisive increments, the transferred \musique{} direction scores original decisive increments at $0.931$ AUROC, paraphrased ones at $0.929$ and independently authored ones at $0.918$, with mean projections $0.101$, $0.098$ and $0.096$ (non-decisive: $-0.082$). Paraphrastic and independent redundancy after sufficiency is cleanly separated from completion ($0.974$ and $0.995$ own probe, \cref{tab:estb_quality}). The two hardest quality states are the ones that most resemble completion. Contradictory evidence added from the penultimate state (C5, the decisive paragraph with a swapped value) reaches only $0.76$ own and $0.73$ transferred, and it has the same ``supplies the missing relation'' surface form as the decisive paragraph. Masked partial evidence (C2), with subject and relation present but the value withheld, reaches $0.81$ own and $0.74$ transferred; its mean projection ($0.044$) lies between the non-decisive and decisive means. Partial evidence in the multi-hop sense (a non-decisive hop) is separated almost perfectly ($1.00$). Contradictory evidence is the hardest control in every retrieval run as well ($0.71$--$0.75$ transferred) and is also the state that projects closest to completion on the synthetic benchmark (\cref{sec:external}).
+
+\paragraph{Summary.} Across the retrieval-source and linguistic-form axes, the sufficiency state remains decodable ($\ge0.91$), the \musique{} direction transfers to unseen questions ($\ge0.90$), wording and authorship of the decisive evidence do not matter, and the causal dissociation reproduces in every cell. What changes is the difficulty of the controls: retrieved distractors from the gold pages and value-withheld or value-swapped versions of the decisive paragraph are where a deployed sufficiency detector would err.
+
+\subsection{Limitations of the construction}
+\label{app:estb-limits}
+\begin{itemize}
+  \item \textbf{Oracle decomposition.} The per-hop retrieval queries substitute gold sub-answers into \musique{}'s decomposition, so the retriever behaves like an iterative system that solves the earlier hops correctly. Gold coverage is an upper bound on what a realistic multi-hop retriever would achieve.
+  \item \textbf{String-based passage labels.} \texttt{retrieved\_gold} requires the gold page title and the sub-answer string. A passage on another page that states the same relation is labelled \texttt{near\_miss} and used as a distractor; a gold-page passage that mentions the sub-answer in an unrelated sentence counts as gold. Both introduce some label noise, in opposite directions.
+  \item \textbf{Selection in the fully retrieved runs.} Only questions whose two hops were both retrieved are kept (34\% for E5, 18\% for BM25), which favours questions with lexically salient hops.
+  \item \textbf{Self-generated paraphrases.} Paraphrases and partials are generated by the same model that is probed. Validation removes rewrites that drop the sub-answer or copy the original, but generated text may still be easier for the model to read than human-written text. The independently authored paragraphs avoid this but are few (64 decisive increments on source-unseen questions).
+  \item \textbf{One model.} All ESTB runs reported here use Qwen2.5-7B-Instruct.
+\end{itemize}

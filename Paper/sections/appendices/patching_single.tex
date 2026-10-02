@@ -1,0 +1,5 @@
+\section{Single-layer patching}
+\label{app:patch-single}
+\paragraph{Setup.} As in \cref{sec:causal}, the insufficient prompt's anchor residual is replaced by the sufficient run's (full patch), but at a single layer only instead of every layer from the best one onward.
+
+\paragraph{Results.} Patching only the best sufficiency layer (16 for Qwen) leaves the insufficient prompt unchanged in all variants. Patching only layer 26 with the full sufficient residual restores $0.18/0.62$ (correct/answered), so late-layer anchor content alone suffices to make the model answer.

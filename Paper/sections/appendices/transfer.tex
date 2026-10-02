@@ -1,0 +1,17 @@
+\section{Cross-task and zero-retraining transfer}
+\label{app:transfer}
+\paragraph{Cross-task transfer.} For every pair of tasks we apply the direction learned for one task (row) to the increments of another (column), at the row task's best layer, on the document split's test questions (\cref{fig:transfer}). Uptake and correction share a direction (cross-task AUROC $0.82$), whereas the sufficiency direction reaches only $0.54$--$0.60$ on uptake.
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.5\linewidth]{transfer_matrix}
+\caption{Cross-task transfer (Qwen2.5-7B, document split): AUROC of the direction learned for the row task, evaluated on the column task.}
+\label{fig:transfer}
+\end{figure}
+
+\paragraph{Zero-retraining transfer.} \Cref{tab:transfer} applies the Qwen two-hop stateless directions, unchanged and at the source's best layer, to the conversational protocol (\cref{app:conversational}), to \twowiki{} (\cref{app:twowiki}) and to 3--4-hop \musique{} (\cref{app:multihop}). All target increments are scored, since none of them were used to train the source probe.
+\begin{table}[h]
+\centering\small
+\input{tables/transfer}
+\caption{Zero-retraining transfer of Qwen2.5-7B 2-hop directions (AUROC at the source's best layer).}
+\label{tab:transfer}
+\end{table}
