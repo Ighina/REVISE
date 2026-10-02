@@ -1,0 +1,12 @@
+# Model-family replication (Mistral-7B-Instruct-v0.3) of the Qwen run ragbench_qwen7b.yaml.
+# Review points 6-9: realistic single-hop RAG with naturally retrieved documents, five domains.
+run_name: ragbench_mistral7b
+model: {name: mistralai/Mistral-7B-Instruct-v0.3, num_threads: 64, batch_size: 8}
+data: {dataset: ragbench, split: train, pool_limit: 4200, n_questions: 3000, select: all, hops: [1, 2], loader_kwargs: {per_subset: 350}}
+regimes: [evidence_only]
+conversational: {enabled: false}
+analysis: {splits: [question, document, answer, relation]}
+patch: {tasks: [state_sufficiency], modes: [multi], max_questions: 150, split: relation}
+ablate: {experiments: [projout], projout_tasks: [state_sufficiency], max_questions: 150, split: relation}
+# paraphrases / judge verdicts come from Qwen so that evidence text and labels match across families
+aux_model: Qwen/Qwen2.5-7B-Instruct

@@ -1,0 +1,11 @@
+# Model-family replication (Llama-3.1-8B-Instruct) of the Qwen run hotpotqa_qwen7b.yaml.
+# Review point 5: independent multi-hop replication (HotpotQA distractor setting).
+# select: all keeps closed-book-correct questions too (review point 10); closed-book status is in screen.jsonl.
+run_name: hotpotqa_llama8b
+model: {name: meta-llama/Llama-3.1-8B-Instruct, num_threads: 64, batch_size: 8}
+data: {dataset: hotpotqa, split: train, pool_limit: 3000, n_questions: 2000, select: all, n_random_perms: 0}
+regimes: [evidence_only]
+conversational: {enabled: false}
+analysis: {splits: [question, document, answer, relation]}
+patch: {tasks: [state_sufficiency, uptake], modes: [multi], max_questions: 150, split: document}
+ablate: {experiments: [projout], projout_tasks: [state_sufficiency], max_questions: 150, split: document}

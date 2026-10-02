@@ -49,6 +49,14 @@ def main(argv=None) -> None:
             backend = get_backend(cfg)
         return backend
 
+    def aux_be():
+        # judge / variant generation: an optional fixed model (cfg["aux_model"]) so that labels and
+        # generated evidence are identical across the model families under study
+        if not cfg.get("aux_model"):
+            return be()
+        from revise.run.collect import get_backend
+        return get_backend({**cfg, "model": {**cfg["model"], "name": cfg["aux_model"]}})
+
     if stage in ("screen", "all"):
         from revise.run.collect import run_screen
         run_screen(cfg, backend=be())
@@ -105,7 +113,7 @@ def main(argv=None) -> None:
         vcfg = cfg.get("variants") or {}
         rows = {}
         if vcfg.get("llm", True):
-            rows = generate_variants(qs, be(), run.dir / "variants.jsonl", batch_size=int(os.environ.get("REVISE_BATCH_SIZE") or cfg["model"]["batch_size"]))
+            rows = generate_variants(qs, aux_be(), run.dir / "variants.jsonl", batch_size=int(os.environ.get("REVISE_BATCH_SIZE") or cfg["model"]["batch_size"]))
         n_llm = attach_variants(qs, rows)
         n_ind = independent_variants(qs) if vcfg.get("independent", True) else 0
         write_jsonl(run.questions_path, (q.to_json() for q in qs))
@@ -116,7 +124,7 @@ def main(argv=None) -> None:
     if stage == "judge":
         from revise.run.judge import run_judge
         for r in regimes:
-            run_judge(cfg, r, backend=be())
+            run_judge(cfg, r, backend=aux_be())
     if stage == "retrieve":
         from revise.data.retrieval import retrieve_for_questions
         rcfg = cfg["data"].get("retrieval") or {"method": "bm25", "k": 20}

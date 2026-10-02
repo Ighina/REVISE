@@ -1,0 +1,11 @@
+# Model-family replication (Mistral-7B-Instruct-v0.3) of the Qwen run musique_2hop_qwen7b_e5_noise.yaml.
+# ESTB retrieval-source axis: MuSiQue 2-hop with e5-retrieved distractors (benchmark gold kept)noise.
+run_name: musique2hop_mistral7b_e5_noise
+model: {name: mistralai/Mistral-7B-Instruct-v0.3, num_threads: 64, batch_size: 8}
+data: {dataset: musique, split: train, hops: [2], pool_limit: 4000, n_questions: 1200, select: wrong_closed_book, n_random_perms: 0,
+       retrieval: {method: e5, mode: noise, k: 30, n_distractors: 18}}
+regimes: [evidence_only]
+conversational: {enabled: false}
+analysis: {splits: [question, document, answer, relation]}
+patch: {tasks: [state_sufficiency], modes: [multi], max_questions: 150, split: document}
+ablate: {experiments: [projout], projout_tasks: [state_sufficiency], max_questions: 150, split: document}

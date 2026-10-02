@@ -1,0 +1,11 @@
+# Model-family replication (Mistral-7B-Instruct-v0.3) of the Qwen run synthetic_qwen7b.yaml.
+# Review point 12 (partial): fully controlled synthetic trajectories with paraphrase / partial / contradictory variants.
+run_name: synthetic_mistral7b
+model: {name: mistralai/Mistral-7B-Instruct-v0.3, num_threads: 64, batch_size: 8}
+data: {dataset: synthetic, split: train, pool_limit: 3000, n_questions: 2400, select: all, hops: [1, 2, 3], n_random_perms: 1, loader_kwargs: {n_questions: 3000}}
+regimes: [evidence_only]
+conversational: {enabled: false}
+analysis: {splits: [question, answer, relation]}
+patch: {tasks: [state_sufficiency, uptake], modes: [multi], max_questions: 150, split: relation}
+ablate: {experiments: [projout], projout_tasks: [state_sufficiency], max_questions: 150, split: relation}
+adaptive: {split: relation}
