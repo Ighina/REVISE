@@ -10,3 +10,4 @@ patch: {tasks: [state_sufficiency], modes: [multi], max_questions: 150, split: r
 ablate: {experiments: [projout], projout_tasks: [state_sufficiency], max_questions: 150, split: relation}
 # paraphrases / judge verdicts come from Qwen so that evidence text and labels match across families
 aux_model: Qwen/Qwen2.5-7B-Instruct
+adaptive: {split: relation}   # document components span almost the whole pool

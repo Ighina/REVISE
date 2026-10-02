@@ -7,3 +7,4 @@ conversational: {enabled: false}
 analysis: {splits: [question, document, answer, relation]}
 patch: {tasks: [state_sufficiency], modes: [multi], max_questions: 150, split: relation}
 ablate: {experiments: [projout], projout_tasks: [state_sufficiency], max_questions: 150, split: relation}
+adaptive: {split: relation}   # document components span almost the whole pool

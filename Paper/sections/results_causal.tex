@@ -35,4 +35,4 @@ The one direction with a causal effect is $\vdm$, the mean difference between su
 \label{fig:steer}
 \end{figure}
 
-Used to stop retrieval, the pre-generation sufficiency score saves rounds but beats ``stop when the model does not say INSUFFICIENT'' only on HotpotQA ($0.71$ vs $0.65$; \cref{app:adaptive}).
+Used to stop retrieval, the pre-generation sufficiency readouts match ``stop when the model does not say INSUFFICIENT'' on \musique{} and beat it on HotpotQA ($0.73$ vs $0.65$); uptake, correction and stability are poor stopping rules, but the uptake (or correction) direction is the best learned verifier of the answer once retrieval stops (\cref{app:adaptive}).
