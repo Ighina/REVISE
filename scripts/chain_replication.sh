@@ -8,7 +8,7 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 source "$HOME/miniconda3/etc/profile.d/conda.sh"; conda activate revise
 export REVISE_SCRATCH=${REVISE_SCRATCH:-/scratch/users/iacopog/revise}
-export GPUQ_ARGS=${GPUQ_ARGS:---devices 3 -m 40} BATCH=${BATCH:-16} TOKEN_BUDGET=${TOKEN_BUDGET:-32000}
+export GPUQ_ARGS=${GPUQ_ARGS:--g 1 -m 40} BATCH=${BATCH:-16} TOKEN_BUDGET=${TOKEN_BUDGET:-32000}
 R=$REVISE_SCRATCH/runs
 cpu() { local cfg=$1; shift; for st in "$@"; do echo "[$(date)] cpu $cfg $st"; REVISE_DEVICE=cpu REVISE_NUM_THREADS=48 python -m revise.cli $st -c "$cfg" ${EXTRA:-} >> "$R/$RUN/cpu_stage_$st.log" 2>&1 || echo "[$(date)] WARNING cpu stage $st failed for $cfg"; done; }
 gpu() { local cfg=$1; shift; HOURS=${HOURS:-6} scripts/gpu_run.sh "$cfg" "$@" || echo "[$(date)] WARNING gpu stages $* failed for $cfg"; }
