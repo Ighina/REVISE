@@ -203,6 +203,25 @@ The reviewer question "would a text classifier do as well?" is answered by train
 
 The stored best-layer probe of a run, trained once on all questions, is scored separately on test increments grouped by closed-book status (from `screen.jsonl`), question type (HotpotQA bridge/comparison), domain (RAGBench), and number of hops or gold documents. No refitting is involved. This answers two review points. First, uptake is not a multi-hop artefact: single-hop RAGBench gives 0.70, HotpotQA comparison questions 0.79, single-hop synthetic 0.99. Second, the readout is not a "need for evidence" signal: HotpotQA sufficiency is 0.978 on closed-book-incorrect and 0.984 on closed-book-correct questions.
 
+### 5.9 What the probes read: state vs update, evidence vs output (added 2026-10-03)
+
+Three analyses answer the reviewer question "how much of the 0.95 is the *change* of state?" and the alternative that "sufficiency" is just the model's planned INSUFFICIENT output.
+
+* **Representation ablation** (`revise/analysis/representation_ablation.py`). Every update probe is refitted on h(C_{k-1}), h(C_k), Δh and [h(C_{k-1}); h(C_k)] for the same increments, labels and splits.
+  * h(C_k) gives 0.93–0.94 against 0.95 for Δh on sufficiency, and 0.90 against 0.91 on matched.
+  * h(C_{k-1}) gives exactly 0.733, the AUROC of an oracle that knows only the starting stage, and exactly 0.500 on matched, where the starting state is shared.
+  * The concatenation equals Δh.
+  * For uptake, correction, stability and revision, h(C_k) is as good as or better than Δh.
+  * The stored state-sufficiency probe applied to h(C_k) gives only 0.70 on the full update task, because 27% of the negatives end in an already sufficient context.
+  * Conclusion: the information is in the resulting state. The paired update is a controlled way to read it, not its source.
+* **Output held fixed** (`revise/analysis/behaviour_control.py`). Sufficiency probes are scored, and retrained, only on increments after which the model still says INSUFFICIENT, giving Δh 0.935–0.949. The output indicator alone gives 0.65–0.76. So the readout is not the planned output.
+* **Verbalised vs internal sufficiency** (`revise/analysis/verbal_vs_internal.py`). The model's answer/INSUFFICIENT output is a sufficiency judgement, and it rejects 33–43% of sufficient contexts.
+  * The state-sufficiency probe's 0.99 is partly paragraph count: every context with three or more paragraphs is sufficient.
+  * Count-matched (two-paragraph contexts, probe retrained) it is 0.976–0.986, against 0.71–0.77 for the verbalised judgement, and 0.967–0.982 among contexts the model rejects.
+  * At 0.95 precision the probe recovers 76–81% of wrongly rejected contexts with 3–4% false alarms.
+  * Wrongly rejected contexts score 0.80–0.87 on a 0 (insufficient) to 1 (sufficient) scale, against 1.03 for answered ones, so the internal state is graded and the verbal decision is a noisier thresholded read-out.
+* Tables come from `Paper/figures/make_state_tables.py`: `rep_ablation.tex`, `behaviour_control.tex`, `verbal_internal.tex`. The write-up is in Appendix C (behaviour), Appendix D (state vs update) and the readout subsection "What the probes read".
+
 ---
 
 ## 6. Causal validation: readout versus mechanism

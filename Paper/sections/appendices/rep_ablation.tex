@@ -1,0 +1,33 @@
+\section{State versus update: which representation carries the readout?}
+\label{app:rep}
+
+The probes of \cref{tab:probes} act on the paired update $\Delta h=h(C_k)-h(C_{k-1})$. A natural question is how much of their accuracy comes from the \emph{change} of state, and how much from information already present in either absolute state. If $h(C_k)$ alone did as well, the finding would be that the model's current state represents whether its evidence is sufficient. If $h(C_k)$ were much worse than $\Delta h$, sufficiency would be encoded specifically in the transition caused by the new evidence.
+
+\paragraph{Protocol.} For every update task we refit the probe on four representations of the \emph{same} increments, with the same labels, document split, regularisation ($C=0.5$, balanced classes) and layer selection (grouped three-fold cross-validation on training questions, over all blocks):
+\begin{itemize}
+  \item $h(C_{k-1})$, the anchor state before the new evidence;
+  \item $h(C_k)$, the anchor state after it;
+  \item $\Delta h$, the paper's representation (it reproduces \cref{tab:probes} to within $0.002$);
+  \item the concatenation $[h(C_{k-1});h(C_k)]$, from which a linear probe can represent $\Delta h$, either state, or any other linear combination of the two.
+\end{itemize}
+Both states are the stored activations of the two stateless forward passes; $\Delta h$ is their difference to within float16 precision.
+
+\begin{table}[h]
+\centering\small
+\input{tables/rep_ablation}
+\caption{Held-out AUROC (document split, best layer by inner cross-validation) of probes for each update task, fitted on four representations of the same increments. Bold: best per row.}
+\label{tab:rep_ablation}
+\end{table}
+
+\paragraph{Sufficiency.} The state \emph{after} the new evidence carries most of the readout. $h(C_k)$ reaches $0.930$--$0.940$ on the full task and $0.900$--$0.908$ on the matched one, against $0.947$--$0.952$ and $0.910$--$0.917$ for $\Delta h$. The state \emph{before} the evidence is uninformative beyond the trajectory stage. On the full task it scores $0.733$ in all three models, which is exactly the AUROC of an oracle that knows only whether the increment starts from the empty context, a partial context or an already sufficient one: $20\%$ of increments starting from a partial context are decisive, and none of the others. On the matched task, where the decisive increment and its four controls start from the same state, it scores exactly $0.500$. The concatenation matches $\Delta h$ ($0.949$--$0.950$; matched $0.907$--$0.923$). So subtracting the earlier state adds no information that having both states does not; what it does is remove the large question-specific component that both states share, which makes a single linear direction work.
+
+\paragraph{Why $h(C_k)$ is not trivially enough.} On the full task, $27\%$ of negatives end in a context that is already sufficient: a distractor, duplicate or falsified paragraph added after sufficiency, or the full context. A pure ``is this context sufficient?'' detector cannot reject them. Applying the state-sufficiency probe of \cref{tab:probes} (trained on whole contexts, $0.99$ AUROC on its own task) to $h(C_k)$ of these increments gives only $0.70$ on the full update task, and $0.87$--$0.90$ on the matched task, where no negative ends in a sufficient context. The $h(C_k)$ probe can, because the state after the decisive paragraph differs from the state after a post-sufficiency addition: the former is a \emph{minimal} sufficient context, the latter has more paragraphs. Part of what separates them is plausibly context size. On the matched task this cannot help, because every control adds exactly one paragraph to the same penultimate state. There, $h(C_k)$ at $0.90$ is a genuine readout of sufficiency from the resulting state.
+
+\paragraph{Uptake, correction, stability, revision.} For the behavioural tasks the state after the evidence is as informative as the update or more so: uptake $0.769$--$0.798$ against $0.771$--$0.783$, correction $0.766$--$0.872$ against $0.730$--$0.818$, stability $0.813$--$0.882$ against $0.750$--$0.869$, revision $0.789$--$0.806$ against $0.709$--$0.767$. The concatenation is best or tied on most of them. The earlier state carries a little information of its own here ($0.52$--$0.65$): how the model behaves after new evidence depends partly on the state it was in. These tasks are about the model's \emph{resulting} answer, so it is unsurprising that the resulting state predicts them best. The uptake result means the signal that decisive evidence will be integrated is present in the state after the evidence arrives, before generation, and does not require comparing with the state before it.
+
+\paragraph{What this means for the paper's claims.}
+\begin{itemize}
+  \item The informational claims stand: sufficiency and uptake are linearly readable at the answer-start position before generation, robustly across splits and models. But ``readable from the update'' should be understood as ``readable from the resulting state, measured in a design that controls for the starting state''. The paired update is the cleanest way to read the state change without question-specific content, and it is what makes the matched controls possible (same starting state). It is not the source of the information.
+  \item The causal analysis of \cref{sec:causal} is unaffected. It patches the anchor residual of the insufficient prompt with that of the sufficient prompt, which is the same as adding $\Delta h$ to $h(C_{k-1})$. Its conclusion, that the probe direction is inert while the full residual and $\vdm$ are causal, concerns directions in this space whichever way they were found.
+  \item The text-baseline comparison (\cref{sec:text}) is unaffected: it compares classifiers on the same increments and labels.
+\end{itemize}
