@@ -1,0 +1,12 @@
+\section{Difference-of-means steering}
+\label{app:steer-dm}
+\paragraph{Low dose (main protocol).} We add $\alpha\,u_l\,\vdm^{(l)}$ at four layers from the best sufficiency layer, from the anchor onward, with $\alpha\in\{\pm0.5,\pm1\}$ in units of the per-layer sufficient-minus-insufficient gap, on 150 held-out questions per set. \Cref{tab:steer} gives the full numbers behind \cref{fig:steer}.
+\begin{table*}[t]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\input{tables/steer}
+\caption{Low-dose steering along $\vdm$ (150 held-out questions per set). Baselines ($\alpha=0$) appear in \cref{fig:steer}.}
+\label{tab:steer}
+\end{table*}
+
+\paragraph{High dose.} Adding $\alpha\,u_l\,\vdm^{(l)}$ at all positions and at every layer from the best layer onward with $|\alpha|\ge2$ (per-layer gaps of $5$--$14$ $\ell_2$) produces degenerate output: every prompt is ``answered'', never correctly and never with INSUFFICIENT. This happens equally for the probe direction and the random control, and is why the main protocol uses four layers, anchor onward and $|\alpha|\le1$.

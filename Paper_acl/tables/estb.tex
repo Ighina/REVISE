@@ -1,0 +1,14 @@
+\begin{tabular}{lrccccccccc}
+\toprule
+& & \multicolumn{3}{c}{within-run probe (AUROC)} & \multicolumn{2}{c}{MuSiQue dir.} & \multicolumn{4}{c}{answered rate} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-7}\cmidrule(lr){8-11}
+Evidence source & $n_q$ & suff. & matched & uptake & suff. & uptake & unpatched & full & $\parallel v$ & proj.-out $\vdm$ \\
+\midrule
+Benchmark gold + benchmark distractors & 2000 & 0.948 & 0.911 & 0.775 & (source) & (source) & 0.13 & 0.71 & 0.13 & 0.01 \\
+Gold + E5-retrieved distractors & 1200 & 0.946 & 0.909 & 0.681 & 0.935 & 0.817 & 0.10 & 0.77 & 0.10 & 0.02 \\
+Gold + BM25-retrieved distractors & 1200 & 0.951 & 0.915 & 0.679 & 0.939 & 0.817 & 0.10 & 0.77 & 0.10 & 0.01 \\
+All evidence E5-retrieved & 402 & 0.922 & 0.891 & 0.839 & 0.905 & 0.762 & 0.19 & 0.72 & 0.19 & 0.03 \\
+All evidence BM25-retrieved & 219 & 0.912 & 0.876 & 0.748 & 0.910 & 0.820 & 0.30 & 0.68 & 0.30 & 0.02 \\
++ LLM paraphrase / partial / independent & 1200 & 0.935 & 0.885 & 0.718 & 0.929 & 0.796 & 0.10 & 0.77 & 0.10 & 0.00 \\
+\bottomrule
+\end{tabular}

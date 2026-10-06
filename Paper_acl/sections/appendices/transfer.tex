@@ -1,0 +1,9 @@
+\section{Transfer without retraining}
+\label{app:transfer}
+\Cref{tab:transfer} applies the Qwen 2-hop stateless directions, unchanged and at the layer chosen on \musique{}, to the conversational protocol (\cref{app:conversational}), to \twowiki{} (\cref{app:twowiki}) and to 3--4-hop \musique{} (\cref{app:multihop}). All target increments are scored, since none of them were used to train the source probe. Transfer to the external benchmarks and to retrieved evidence is reported in \cref{sec:external} and \cref{app:estb}; cross-task transfer between the five tasks is in \cref{app:related}.
+\begin{table*}[t]
+\centering\small
+\input{tables/transfer}
+\caption{Transfer of Qwen2.5-7B 2-hop directions without retraining (AUROC at the source's best layer).}
+\label{tab:transfer}
+\end{table*}

@@ -1,0 +1,9 @@
+\section{Results by question group on the external sources}
+\label{app:groups}
+\Cref{tab:groups} breaks down the held-out probe AUROC of the external sources (\cref{sec:external}) by question group, to separate the evidence-state readout from properties of the questions. The groups are: closed-book status (unlike the main runs, HotpotQA and RAGBench keep the questions the model answers correctly without evidence); question type (HotpotQA bridge versus comparison, whose two facts are independent lookups); domain (RAGBench's twelve sub-datasets grouped into biomedical, finance, technical, customer support, general web QA and Wikipedia); and hop count (synthetic 1--3 hops; for RAGBench, one versus two gold documents). The stored best-layer probe of each source, trained on all groups, is scored per group on test questions without refitting; increment counts are in parentheses.
+\begin{table*}[t]
+\centering\scriptsize
+\input{tables/groups}
+\caption{Held-out probe AUROC by question group (test-set increment counts in parentheses): closed-book status, question type, domain and hop count.}
+\label{tab:groups}
+\end{table*}

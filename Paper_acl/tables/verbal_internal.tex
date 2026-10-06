@@ -1,0 +1,43 @@
+\begin{tabular}{lccc}
+\toprule
+ & Qwen2.5-7B & Llama-3.1-8B & Mistral-7B \\
+\midrule
+\multicolumn{4}{l}{\emph{Held-out contexts}} \\
+\quad sufficient / insufficient & 2754 / 6090 & 2701 / 6000 & 2754 / 6100 \\
+\quad sufficient but verbalised INSUFFICIENT & 901 (33\%) & 1079 (40\%) & 1183 (43\%) \\
+\multicolumn{4}{l}{\emph{Verbalised judgement (answers = sufficient)}} \\
+\quad AUROC & 0.762 & 0.722 & 0.681 \\
+\quad TPR / FPR & 0.673 / 0.150 & 0.601 / 0.156 & 0.570 / 0.208 \\
+\multicolumn{4}{l}{\emph{State-sufficiency probe at the same anchor}} \\
+\quad AUROC & 0.992 & 0.994 & 0.996 \\
+\quad TPR / FPR, threshold at verbalised FPR & 0.995 / 0.188 & 0.996 / 0.178 & 1.000 / 0.194 \\
+\qquad recall on wrongly abstained sufficient contexts & 0.990 & 0.991 & 0.999 \\
+\qquad false alarms on correctly abstained insufficient contexts & 0.154 & 0.151 & 0.167 \\
+\quad TPR / FPR, threshold at 0.95 precision & 0.962 / 0.050 & 0.970 / 0.051 & 0.977 / 0.038 \\
+\qquad recall on wrongly abstained sufficient contexts & 0.936 & 0.956 & 0.961 \\
+\qquad false alarms on correctly abstained insufficient contexts & 0.039 & 0.040 & 0.029 \\
+\multicolumn{4}{l}{\emph{Wrong abstentions by condition: abstain rate; probe recall at 0.95 precision}} \\
+\quad minimal sufficient & 0.29; 0.79 & 0.30; 0.84 & 0.37; 0.87 \\
+\quad sufficient + distractor & 0.35; 1.00 & 0.41; 1.00 & 0.49; 1.00 \\
+\quad sufficient + duplicate & 0.29; 0.99 & 0.34; 0.99 & 0.39; 1.00 \\
+\quad full context (20 par.) & 0.40; 1.00 & 0.60; 1.00 & 0.50; 1.00 \\
+\multicolumn{4}{l}{\emph{Mean probe score (0 = insufficient mean, 1 = sufficient mean on training contexts)}} \\
+\quad sufficient, answered & 0.98 & 0.88 & 0.95 \\
+\quad sufficient, verbalised INSUFFICIENT & 1.03 & 1.15 & 1.04 \\
+\quad insufficient, answered & 0.10 & 0.08 & 0.04 \\
+\quad insufficient, verbalised INSUFFICIENT & -0.01 & -0.00 & -0.03 \\
+\midrule
+\multicolumn{4}{l}{\emph{Two-paragraph contexts only (paragraph count matched; probe retrained on them)}} \\
+\quad minimal sufficient / insufficient two-paragraph & 927 / 4263 & 901 / 4200 & 924 / 4270 \\
+\quad minimal sufficient but verbalised INSUFFICIENT & 268 & 273 & 341 \\
+\quad verbalised judgement: AUROC; TPR / FPR & 0.774; 0.71 / 0.16 & 0.773; 0.70 / 0.15 & 0.711; 0.63 / 0.21 \\
+\quad probe AUROC (all two-paragraph contexts) & 0.976 & 0.981 & 0.986 \\
+\quad probe AUROC among contexts verbalised INSUFFICIENT & 0.967 & 0.972 & 0.982 \\
+\quad threshold at verbalised FPR: TPR / FPR & 0.984 / 0.196 & 0.986 / 0.187 & 0.997 / 0.213 \\
+\qquad recall on wrong abstentions; false alarms on correct abstentions & 0.963; 0.171 & 0.963; 0.161 & 0.991; 0.188 \\
+\quad threshold at 0.95 precision: TPR / FPR & 0.859 / 0.041 & 0.890 / 0.047 & 0.905 / 0.039 \\
+\qquad recall on wrong abstentions; false alarms on correct abstentions & 0.757; 0.032 & 0.773; 0.037 & 0.812; 0.028 \\
+\quad mean probe score: sufficient answered / sufficient abstained & 1.03 / 0.82 & 1.03 / 0.80 & 1.03 / 0.87 \\
+\quad mean probe score: insufficient answered / insufficient abstained & 0.16 / -0.01 & 0.14 / -0.01 & 0.08 / -0.04 \\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,5 @@
+\section{\twowiki{}}
+\label{app:twowiki}
+\paragraph{Setup.} \twowiki{} \cite{ho2020constructing} was built from Wikipedia and Wikidata to evaluate multi-hop reasoning with explicit reasoning paths: each question comes with the evidence triples that connect it to the answer. Because it is constructed independently of \musique{}, we use it to test whether the probes transfer to a different construction. The Qwen pipeline is run unchanged on its two-hop questions, with gold paragraphs from its supporting facts and its own distractors.
+
+\paragraph{Results.} Within-dataset probes (document split): sufficiency $0.986$, matched $0.972$, uptake $0.894$, correction $0.914$. Here the matched task is almost fully explained by nuisance covariates ($0.965$, chiefly the change in gold-answer log-probability); the residualised probe reaches $0.82$. The \musique{} directions transfer at $0.96$ (sufficiency), $0.93$ (matched), $0.85$ (correction) and $0.79$ (uptake) (\cref{tab:transfer}).

@@ -1,0 +1,174 @@
+@inproceedings{trivedi2022musique,
+  title={MuSiQue: Multihop Questions via Single-hop Question Composition},
+  author={Trivedi, Harsh and Balasubramanian, Niranjan and Khot, Tushar and Sabharwal, Ashish},
+  booktitle={Transactions of the Association for Computational Linguistics},
+  year={2022}
+}
+@inproceedings{ho2020constructing,
+  title={Constructing A Multi-hop QA Dataset for Comprehensive Evaluation of Reasoning Steps},
+  author={Ho, Xanh and Nguyen, Anh-Khoa Duong and Sugawara, Saku and Aizawa, Akiko},
+  booktitle={COLING},
+  year={2020}
+}
+@inproceedings{NEURIPS2020_6b493230,
+ author = {Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra and Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman and K\"{u}ttler, Heinrich and Lewis, Mike and Yih, Wen-tau and Rockt\"{a}schel, Tim and Riedel, Sebastian and Kiela, Douwe},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {H. Larochelle and M. Ranzato and R. Hadsell and M.F. Balcan and H. Lin},
+ pages = {9459--9474},
+ publisher = {Curran Associates, Inc.},
+ title = {Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2020/file/6b493230205f780e1bc26945df7481e5-Paper.pdf},
+ volume = {33},
+ year = {2020}
+}
+@inproceedings{context-vs-memory,
+title = "Analysing the residual stream of language models under knowledge conflicts",
+abstract = "Large language models (LLMs) can store a significant amount of factual knowledge in their parameters. However, their parametric knowledge may conflict with the information provided in the context. Such conflicts can lead to undesirable model behaviour, such as reliance on outdated or incorrect information. In this work, we investigate whether LLMs can identify knowledge conflicts and whether it is possible to know which source of knowledge the model will rely on by analysing the residual stream of the LLM. Through probing tasks, we find that LLMs can internally register the signal of knowledge conflict in the residual stream, which can be accurately detected by probing the intermediate model activations. This allows us to detect conflicts within the residual stream before generating the answers without modifying the input or model parameters. Moreover, we find that the residual stream shows significantly different patterns when the model relies on contextual knowledge versus parametric knowledge to resolve conflicts. This pattern can be employed to estimate the behaviour of LLMs when conflict happens and prevent unexpected answers before producing the answers. Our analysis offers insights into how LLMs internally manage knowledge conflicts and provides a foundation for developing methods to control the knowledge selection processes.",
+keywords = "computation and language",
+author = "Yu Zhao and Xiaotang Du and Giwon Hong and Gema, \{Aryo Pradipta\} and Alessio Devoto and Hongru Wang and Xuanli He and Kam-Fai Wong and Pasquale Minervini",
+year = "2024",
+month = oct,
+day = "9",
+doi = "10.48550/arXiv.2410.16090",
+language = "English",
+volume = "37",
+pages = "1--12",
+booktitle = "Proceedings of the 38th Conference on Neural Information Processing Systems",
+publisher = "Neural Information Processing Systems Foundation (NeurIPS)",
+note = "NeurIPS 2024 - Workshop on Foundation Model Interventions, MINT 2024 ; Conference date: 15-12-2024 Through 15-12-2024",
+url = "https://sites.google.com/view/mint-2024",
+}
+@inproceedings{SpARE,
+title = "Steering knowledge selection behaviours in LLMs via SAE-based representation engineering",
+abstract = "Large language models (LLMs) can store a significant amount of factual knowledge in their parameters. However, their parametric knowledge may conflict with the information provided in the context—this phenomenon, known as context-memory knowledge conflicts, can lead to undesirable model behaviour, such as reliance on outdated or incorrect information. Analysing the internal activations of LLMs, we find that they can internally register the signals of knowledge conflict at mid-layers. Such signals allow us to detect whether a knowledge conflict occurs and use inference-time intervention strategies to resolve it. In this work, we propose SpARE, a training-free representation engineering method that uses pre-trained sparse auto-encoders (SAEs) to control the knowledge selection behaviour of LLMs. SpARE identifies the functional features that control the knowledge selection behaviours and applies them to edit the internal activations of LLMs at inference time. Our experimental results show that SpARE can effectively control the usage of either knowledge source to resolve knowledge conflict in open-domain question-answering tasks, surpassing existing representation engineering methods (+10\%) as well as contrastive decoding methods (+15\%).",
+author = "Yu Zhao and Alessio Devoto and Giwon Hong and Xiaotang Du and Gema, \{Aryo Pradipta\} and Hongru Wang and Xuanli He and Kam-Fai Wong and Pasquale Minervini",
+year = "2025",
+month = may,
+day = "4",
+doi = "10.18653/v1/2025.naacl-long.264",
+language = "English",
+pages = "5117--5136",
+editor = "Luis Chiruzzo and Alan Ritter and Lu Wang",
+booktitle = "Proceedings of the 2025 Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics",
+publisher = "Association for Computational Linguistics (ACL)",
+note = "2025 Annual Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics, NAACL 2025 ; Conference date: 29-04-2025 Through 04-05-2025",
+url = "https://2025.naacl.org/",
+}
+@techreport{ActivationSteering,
+title = "Activation Addition: Steering Language Models Without Optimization",
+abstract = "Reliably controlling the behavior of large language models (LLMs) is a pressing open problem. Existing methods include supervised finetuning, reinforcement learning from human feedback (RLHF), prompt engineering and guided decoding. We instead investigate activation engineering: modifying activations at inference time to predictably alter model behavior. In particular, we bias the forward pass with an added 'steering vector' implicitly specified through natural language. Unlike past work which learned these steering vectors (Subramani, Suresh, and Peters 2022; Hernandez, Li, and Andreas 2023), our Activation Addition (ActAdd) method computes them by taking the activation differences that result from pairs of prompts. We demonstrate ActAdd on GPT-2 on OpenWebText and ConceptNet. Our inference-time approach yields control over high-level properties of output and preserves off-target model performance. It involves far less compute and implementation effort compared to finetuning or RLHF, allows users to provide natural language specifications, and its overhead scales naturally with model size. ",
+author = "Turner, \{Alexander Matt\} and Lisa Thiergart and Gavin Leech and David Udell and Ulisse Mini and Monte MacDiarmid",
+year = "2024",
+month = jun,
+day = "4",
+doi = "10.48550/arXiv.2308.10248",
+language = "English",
+publisher = "arXiv.org",
+address = "United Kingdom",
+type = "WorkingPaper",
+institution = "arXiv.org",
+}
+@article{Kumaran2026,
+  author   = {Kumaran, Dharshan and Daw, Nathaniel and Osindero, Simon and Veli{\v{c}}kovi{\'{c}}, Petar and Patraucean, Viorica},
+  title    = {Causal evidence that language models use confidence to drive behaviour},
+  journal  = {Nature Machine Intelligence},
+  year     = {2026},
+  volume   = {8},
+  number   = {9},
+  pages    = {1411--1425},
+  month    = {sep},
+  doi      = {10.1038/s42256-026-01293-x},
+  url      = {https://doi.org/10.1038/s42256-026-01293-x},
+  issn     = {2522-5839},
+  abstract = {Metacognition—assessing the quality of one’s own cognitive performance—guides adaptive behaviour across species. Confidence signals can be extracted from language model outputs, yet a fundamental question remains: do models actually use these signals to decide whether to answer or abstain? Here we developed a four-phase paradigm. Phase 1 elicited baseline confidence without an abstention option. Phase 2 showed that large language models apply an implicit threshold to internal confidence when abstaining, with confidence effect sizes roughly an order of magnitude larger than alternative mechanisms. Phase 3 provided causal evidence via activation steering: boosting or suppressing confidence correspondingly decreased or increased abstention, with mediation analysis confirming confidence redistribution as the primary mechanism. Phase 4 instructed models to abstain at different confidence levels and showed they adjusted their behaviour accordingly, indicating they read out and act on confidence to set abstention policies. Critically, verbal confidence—an explicit self-evaluation from a separate forward pass—independently predicted abstention across all models despite being less discriminatory of correctness, and activation decoding showed both measures (that is, token log probabilities and verbal confidence) are lossy read-outs of a richer internal representation. Together, these results suggest that abstention is captured by the joint operation of a multidimensional internal confidence representation and threshold-based policies—consistent with structured metacognitive control in large language models—a capacity of growing importance as models transition to autonomous agents that must recognize their own uncertainty.}
+}
+@inproceedings{yang2018hotpotqa,
+  title     = {{HotpotQA}: A Dataset for Diverse, Explainable Multi-hop Question Answering},
+  author    = {Yang, Zhilin and Qi, Peng and Zhang, Saizheng and Bengio, Yoshua and Cohen, William W. and Salakhutdinov, Ruslan and Manning, Christopher D.},
+  booktitle = {Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing},
+  pages     = {2369--2380},
+  year      = {2018}
+}
+@article{friel2024ragbench,
+  title   = {{RAGBench}: Explainable Benchmark for Retrieval-Augmented Generation Systems},
+  author  = {Friel, Robert and Belyi, Masha and Sanyal, Atindriyo},
+  journal = {arXiv preprint arXiv:2407.11005},
+  year    = {2024}
+}
+@inproceedings{jin2025flashrag,
+  title     = {{FlashRAG}: A Modular Toolkit for Efficient Retrieval-Augmented Generation Research},
+  author    = {Jin, Jiajie and Zhu, Yutao and Dou, Zhicheng and Dong, Guanting and Yang, Xinyu and Zhang, Chenghao and Zhao, Tong and Yang, Zhao and Wen, Ji-Rong},
+  booktitle = {Companion Proceedings of the ACM Web Conference 2025},
+  year      = {2025}
+}
+@inproceedings{karpukhin2020dense,
+  title     = {Dense Passage Retrieval for Open-Domain Question Answering},
+  author    = {Karpukhin, Vladimir and Oguz, Barlas and Min, Sewon and Lewis, Patrick and Wu, Ledell and Edunov, Sergey and Chen, Danqi and Yih, Wen-tau},
+  booktitle = {Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing},
+  pages     = {6769--6781},
+  year      = {2020}
+}
+@article{wang2022e5,
+  title   = {Text Embeddings by Weakly-Supervised Contrastive Pre-training},
+  author  = {Wang, Liang and Yang, Nan and Huang, Xiaolong and Jiao, Binxing and Yang, Linjun and Jiang, Daxin and Majumder, Rangan and Wei, Furu},
+  journal = {arXiv preprint arXiv:2212.03533},
+  year    = {2022}
+}
+@article{robertson2009bm25,
+  title   = {The Probabilistic Relevance Framework: {BM25} and Beyond},
+  author  = {Robertson, Stephen and Zaragoza, Hugo},
+  journal = {Foundations and Trends in Information Retrieval},
+  volume  = {3},
+  number  = {4},
+  pages   = {333--389},
+  year    = {2009}
+}
+@article{lu2024bm25s,
+  title   = {{BM25S}: Orders of magnitude faster lexical search via eager sparse scoring},
+  author  = {L{\`u}, Xing Han},
+  journal = {arXiv preprint arXiv:2407.03618},
+  year    = {2024}
+}
+@inproceedings{he2023debertav3,
+  title     = {{DeBERTaV3}: Improving {DeBERTa} using {ELECTRA}-Style Pre-Training with Gradient-Disentangled Embedding Sharing},
+  author    = {He, Pengcheng and Gao, Jianfeng and Chen, Weizhu},
+  booktitle = {International Conference on Learning Representations},
+  year      = {2023}
+}
+@article{qwen2025qwen25,
+  title   = {{Qwen2.5} Technical Report},
+  author  = {{Qwen Team}},
+  journal = {arXiv preprint arXiv:2412.15115},
+  year    = {2024}
+}
+@article{grattafiori2024llama3,
+  title   = {The {Llama} 3 Herd of Models},
+  author  = {Grattafiori, Aaron and others},
+  journal = {arXiv preprint arXiv:2407.21783},
+  year    = {2024}
+}
+@article{jiang2023mistral,
+  title   = {Mistral {7B}},
+  author  = {Jiang, Albert Q. and Sablayrolles, Alexandre and Mensch, Arthur and Bamford, Chris and Chaplot, Devendra Singh and de las Casas, Diego and Bressand, Florian and Lengyel, Gianna and Lample, Guillaume and Saulnier, Lucile and others},
+  journal = {arXiv preprint arXiv:2310.06825},
+  year    = {2023}
+}
+@article{alain2016probes,
+  title   = {Understanding intermediate layers using linear classifier probes},
+  author  = {Alain, Guillaume and Bengio, Yoshua},
+  journal = {arXiv preprint arXiv:1610.01644},
+  year    = {2016}
+}
+@article{marks2023geometry,
+  title   = {The Geometry of Truth: Emergent Linear Structure in Large Language Model Representations of True/False Datasets},
+  author  = {Marks, Samuel and Tegmark, Max},
+  journal = {arXiv preprint arXiv:2310.06824},
+  year    = {2023}
+}
+@inproceedings{meng2022locating,
+  title     = {Locating and Editing Factual Associations in {GPT}},
+  author    = {Meng, Kevin and Bau, David and Andonian, Alex and Belinkov, Yonatan},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {35},
+  year      = {2022}
+}

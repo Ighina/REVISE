@@ -1,0 +1,40 @@
+\section{Evidence conditions and increments}
+\label{app:conditions}
+This appendix lists every context (\emph{condition}) shown to the model for one question, and every pair of conditions (\emph{increment}) on which probes are trained. Consider a question with $n$ gold paragraphs $g_0,\dots,g_{n-1}$, one per reasoning hop, in the order given by the dataset's decomposition of the question, together with its pool of distractor paragraphs. The conditions are:
+\begin{itemize}
+  \item \textbf{Empty and distractor-only contexts.} $C_0$ contains no evidence. $C_D$ contains $n$ distractors, each matched in word count to one gold paragraph.
+  \item \textbf{Chains.} Gold paragraphs are added one at a time, in the canonical hop order, in the reverse order and, for $n\ge3$, in random orders. Each chain gives the prefixes $C_{o_{1}},C_{o_{1}o_{2}},\dots$, and its last prefix is the minimal sufficient context. Each new paragraph is inserted at a uniformly random position among the paragraphs already present, so that the position of the decisive paragraph carries no information. Identical contexts reached through different orders are stored once.
+  \item \textbf{Leave-one-out contexts} ($n\ge3$): all gold paragraphs but one, shuffled, followed by their completion with the missing paragraph.
+  \item \textbf{Matched controls.} From every \emph{penultimate} context $S$, i.e.\ a chain or leave-one-out context that lacks exactly one gold paragraph, we build four controls alongside the decisive completion:
+  $S{+}D$ adds a distractor matched in length to the missing paragraph;
+  $S{+}R$ adds a verbatim duplicate of a gold paragraph already in $S$;
+  $S{+}F$ adds the missing paragraph with its sub-answer (and title, if applicable) replaced by another question's sub-answer for the same relation, so the false paragraph remains plausible in type (questions whose sub-answer does not appear in the paragraph have no such control);
+  $S{+}A$ adds a distractor with the sentence ``(Not to be confused with \{answer\}.)'' appended, so the answer string is present without the supporting fact.
+  \item \textbf{Post-sufficiency contexts.} The canonical minimal sufficient context plus a distractor, plus a duplicate gold paragraph, or plus a falsified copy of the final hop that conflicts with it; and the full context of all 20 paragraphs, shuffled.
+\end{itemize}
+For 2-hop questions this gives 17 conditions and 17 increments per question. \Cref{tab:kinds} names the kinds of increment, as they appear in the tables and figures, groups them into the three families used in the main text (decisive, non-decisive, irrelevant), and shows which task uses each kind as a positive ($+$), as a negative ($-$) or not at all ($\cdot$). For uptake the label is behavioural ($\pm$: positive if the answer becomes correct). The conversational protocol (\cref{app:conversational}) re-runs the 10 chain-related increment kinds with the model's own stateless answer shown in the prompt (30{,}000 increments for Qwen).
+
+\begin{table*}[t]
+\centering\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{llp{7.2cm}ccc}
+\toprule
+Family & Kind & What the increment adds & Suff. & Matched & Uptake \\
+\midrule
+decisive & \texttt{decisive} & the last missing gold paragraph of a chain & $+$ & $+$ & $\pm$ \\
+decisive & \texttt{loo\_decisive} & the missing gold paragraph of a leave-one-out context ($n\ge3$) & $+$ & $+$ & $\pm$ \\
+non-decisive & \texttt{gold\_nondecisive} & a gold paragraph that still leaves another one missing & $-$ & $\cdot$ & $\cdot$ \\
+irrelevant & \texttt{distractor\_from\_none} & distractors added to the empty context & $-$ & $\cdot$ & $\cdot$ \\
+irrelevant & \texttt{distractor} & a length-matched distractor added to a penultimate context ($S{+}D$) & $-$ & $-$ & $\cdot$ \\
+irrelevant & \texttt{redundant} & a duplicate of a gold paragraph already present ($S{+}R$) & $-$ & $-$ & $\cdot$ \\
+irrelevant & \texttt{false} & the missing paragraph with a substituted sub-answer ($S{+}F$) & $-$ & $-$ & $\cdot$ \\
+irrelevant & \texttt{answer\_ctrl} & a distractor that mentions the answer string ($S{+}A$) & $-$ & $-$ & $\cdot$ \\
+irrelevant & \texttt{post\_distractor} & a distractor added to the minimal sufficient context & $-$ & $\cdot$ & $\cdot$ \\
+irrelevant & \texttt{post\_redundant} & a duplicate gold paragraph added to the minimal sufficient context & $-$ & $\cdot$ & $\cdot$ \\
+irrelevant & \texttt{post\_false} & a falsified copy of the final hop, conflicting with it, added to the minimal sufficient context & $-$ & $\cdot$ & $\cdot$ \\
+irrelevant & \texttt{full\_context} & all remaining paragraphs added to the minimal sufficient context & $-$ & $\cdot$ & $\cdot$ \\
+\bottomrule
+\end{tabular}
+\caption{Kinds of increment, their family, and their role in each task: positive ($+$), negative ($-$), unused ($\cdot$), or labelled by the model's behaviour ($\pm$). The sufficiency label $y^{\mathrm{suff}}$ is 1 exactly for the decisive family.}
+\label{tab:kinds}
+\end{table*}

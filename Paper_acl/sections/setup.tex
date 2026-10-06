@@ -1,0 +1,42 @@
+\section{Experimental setup}
+\label{sec:setup}
+
+\paragraph{Data.}
+We need questions whose answer depends on several separate facts, with annotations saying which paragraphs contain them. A context is then \emph{sufficient} exactly when it contains every gold paragraph, so sufficiency is defined by the construction and not by the model's behaviour. Multi-hop question answering provides this. Our main experiments use the 2-hop questions of \musique{} \cite{trivedi2022musique}, which composes single-hop questions so that every hop is needed, and gives one gold Wikipedia paragraph per hop, the sub-question and sub-answer of each hop, and 18 distractor paragraphs. For each model we screen 4{,}000 questions without any evidence and keep 2{,}000 that the model answers incorrectly, so that a correct answer after evidence is added can be attributed to the evidence. \Cref{sec:external} adds \twowiki{} \cite{ho2020constructing}, 3--4-hop \musique{}, HotpotQA \cite{yang2018hotpotqa}, RAGBench \cite{friel2024ragbench}, whose documents were retrieved by real RAG pipelines in five domains, and a synthetic benchmark over fictional entities.
+
+\paragraph{Models.}
+Qwen2.5-7B-Instruct (28 layers, $d=3584$), Llama-3.1-8B-Instruct (32 layers, $d=4096$) and Mistral-7B-Instruct-v0.3 (32 layers, $d=4096$), in bfloat16, with greedy decoding of at most 16 tokens and each model's chat template.
+
+\paragraph{Prompt and anchor.}
+Every context is shown with the same instruction: ``Use only the supplied evidence to answer the question. If the evidence is insufficient, output INSUFFICIENT.'' The model therefore makes an explicit sufficiency judgement in its output, which we later use as a baseline. We read the residual stream after every decoder block at the last prompt token, the position from which the first answer token is predicted, so all readouts are taken before generation. A second instruction that lets the model use its own knowledge as well gives the same results (\cref{app:augmented}).
+
+\paragraph{Evidence trajectories.}
+For each question we build a family of contexts; \cref{app:conditions} lists them all. Writing $g_1,\dots,g_n$ for the gold paragraphs, we start from the empty context and from a context of $n$ distractors matched in length to the gold paragraphs. We then add the gold paragraphs one at a time, in the hop order of the dataset and in reverse order. The context that receives the last gold paragraph is the \emph{minimal sufficient} context. Every context that lacks exactly one gold paragraph, which we call \emph{penultimate}, also receives four alternative additions: a distractor of the same length as the missing paragraph, a duplicate of a gold paragraph already present, a falsified copy of the missing paragraph in which the hop's sub-answer is replaced by another question's sub-answer of the same type, and a distractor to which the sentence ``not to be confused with \{answer\}'' is appended. Finally, the minimal sufficient context receives a further distractor, a duplicate gold paragraph, a conflicting falsified paragraph, and the full set of 20 paragraphs. New paragraphs are inserted at a random position, so the position of the decisive paragraph carries no information. For a 2-hop question this gives 17 contexts.
+
+\paragraph{Increments and tasks.}
+An \emph{increment} is a pair of contexts $C_{k-1}\subset C_k$ that differ by one addition. The \emph{decisive} increment adds the last missing gold paragraph. The other increments add a gold paragraph that still leaves one missing (\emph{non-decisive}), or something \emph{irrelevant} to sufficiency: a distractor, a duplicate, a falsified paragraph, an answer-string control, or any addition to a context that is already sufficient. \Cref{tab:tasks} summarises how the two tasks use them; the full list of increment kinds is in \cref{app:conditions}. \emph{Sufficiency} asks whether an increment is the decisive one. Its positives are the decisive increments and its negatives all the others; the \emph{matched} version keeps only the four controls built from the same penultimate context, which is the harder comparison. \emph{Uptake} is defined on decisive increments only, by what the model's answer does: it is positive when the answer becomes correct and negative when the model still answers wrongly or says INSUFFICIENT. Correctness is exact match on any alias, or containment within a short prediction. Every increment also carries the model's full behavioural transition, which defines three further tasks, correction, stability and revision, reported in \cref{app:related}.
+
+\begin{table}[t]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lp{1.7cm}p{3.55cm}@{}}
+\toprule
+Task & Positive increments & Negative increments \\
+\midrule
+Sufficiency & decisive & non-decisive gold paragraph; irrelevant additions (distractor, duplicate, falsified, answer string); additions after sufficiency \\
+\;\;matched & decisive & the four irrelevant additions made to the same penultimate context \\
+Uptake & decisive, answer becomes correct & decisive, answer stays wrong or INSUFFICIENT \\
+\bottomrule
+\end{tabular}
+\caption{The two tasks and the increments that define them. \Cref{tab:kinds} in \cref{app:conditions} gives the complete list.}
+\label{tab:tasks}
+\end{table}
+
+\paragraph{Behaviour.}
+The models follow the instruction when the evidence is clearly lacking: they say INSUFFICIENT on 94--97\% of distractor-only contexts. On the minimal sufficient context they answer correctly only 36--47\% of the time and say INSUFFICIENT 30--36\% of the time, so the verbalised judgement is often wrong on complete evidence; a falsified final paragraph halves abstention (\cref{tab:behaviour}, \cref{app:behaviour}).
+
+\paragraph{Splits.}
+Probes are trained on 70\% of the questions and tested on the rest. By default we use the \emph{document split}, in which questions that share a supporting Wikipedia page are kept on the same side, so a probe cannot succeed by memorising facts about specific pages. Splits by question, by answer entity and by relation type give the same results (\cref{app:splits}).
+
+\paragraph{Baselines.}
+Two kinds of baseline are run on exactly the same increments, labels and splits. \emph{Text classifiers} see the input but not the model: a TF-IDF logistic regression and a fine-tuned DeBERTa-v3-base cross-encoder \cite{he2023debertav3}, each given the question and the added paragraph, the latter also with the previous context (\cref{app:probing}). \emph{Self-verbalisation} uses the model's own output: whether it answers rather than saying INSUFFICIENT, and its confidence, measured as the top-token probability or the negative entropy at the anchor.

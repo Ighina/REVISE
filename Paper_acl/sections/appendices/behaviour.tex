@@ -1,0 +1,91 @@
+\section{Behaviour, verbalised sufficiency and the internal state}
+\label{app:behaviour}
+
+This appendix does three things. It describes how the models behave on each condition family, which supplies the behavioural labels behind uptake, correction, stability and revision. It shows that the model's own output, read as a judgement about whether the evidence is sufficient, is frequently wrong. And it shows that the sufficiency state read from the residual stream at the same position, in the same forward pass, is a much more accurate signal than that verbalised judgement, including in the cases where the verbalised judgement is wrong.
+
+\subsection{Behaviour by condition family}
+
+\Cref{tab:behaviour} reports, for every condition family of \cref{app:conditions}, the fraction of greedy answers that are correct and the fraction that are INSUFFICIENT. It covers the evidence-only regime over the 2{,}000 two-hop questions of each model. The remaining fraction is a wrong answer. All questions are ones the model answers incorrectly closed-book (\cref{sec:setup}), so a correct answer can be attributed to the evidence.
+
+\begin{table*}[t]
+\centering\small
+\input{tables/behaviour}
+\caption{Behaviour by condition family (evidence-only regime, 2{,}000 questions per model): fraction correct / fraction answering INSUFFICIENT. The remaining fraction is a wrong answer.}
+\label{tab:behaviour}
+\end{table*}
+
+Read row by row:
+\begin{itemize}
+  \item \textbf{No evidence and distractors only.} The instruction is followed. The models almost never answer ($94$--$100\%$ INSUFFICIENT) and are never correct. With distractors alone, the $3$--$6\%$ of prompts that are answered are hallucinations.
+  \item \textbf{One hop.} With only one of the two gold paragraphs, the evidence is insufficient by construction, yet the models answer $20$--$31\%$ of the time and are correct $10$--$13\%$ of the time. Some second hops can be guessed from the first, which is one reason correctness and sufficiency are separate labels.
+  \item \textbf{Minimal sufficient.} With both gold paragraphs present and nothing else, the models answer correctly only $36$--$47\%$ of the time, and they say INSUFFICIENT $30$--$36\%$ of the time. The evidence is sufficient by construction: \musique{} composes each question from single-hop questions whose supporting paragraphs are exactly these gold paragraphs. An INSUFFICIENT output here is therefore a \emph{verbalised false negative}: the model declares the evidence insufficient when it is not. The remaining $22$--$28\%$ are wrong answers.
+  \item \textbf{One hop plus a falsified final hop.} Replacing the decisive paragraph with a version whose sub-answer is swapped roughly halves abstention ($49$--$55\%$ INSUFFICIENT, against $69$--$80\%$ with one hop alone). The models treat a type-plausible but false final hop much as they treat the true one, which is what the sufficiency readout also does (\cref{sec:readout}: the false increment projects second only to the decisive one).
+  \item \textbf{Sufficient plus a distractor, and the full context.} Adding irrelevant paragraphs to a sufficient context makes the models abstain \emph{more}: $35$--$47\%$ with one extra distractor and $38$--$61\%$ with all 20 paragraphs. Correctness falls accordingly ($0.17$--$0.39$). Verbalised sufficiency judgements degrade as the context grows, even though the evidence is unchanged.
+\end{itemize}
+
+\subsection{The verbalised judgement is a poor sufficiency detector; the internal state is a good one}
+
+Because the prompt instructs the model to output INSUFFICIENT exactly when the evidence does not determine the answer, its output is a binary sufficiency judgement: \emph{answers} means ``judged sufficient'', \emph{INSUFFICIENT} means ``judged insufficient''. We compare this verbalised judgement with the state-sufficiency probe (\cref{sec:method}), which reads the residual stream at the answer-start anchor of the same forward pass, before any token is generated.
+
+\paragraph{Protocol.} The comparison uses the held-out conditions of the document split, with conditions containing falsified evidence excluded, as in the probe task. These are about $2{,}700$ sufficient and $6{,}000$ insufficient contexts per model. For the verbalised judgement we report its true-positive rate (sufficient contexts answered), its false-positive rate (insufficient contexts answered) and its AUROC as a binary score. For the probe we report AUROC and two operating points, both with the threshold set on \emph{training} contexts. The first matches the false-positive rate of the verbalised judgement, so the probe raises false alarms on insufficient contexts as often as the model's own answers do. The second requires $0.95$ precision. At each operating point we report the probe's recall on the sufficient contexts the model wrongly called INSUFFICIENT (\emph{wrong abstentions}), and its false-alarm rate on the insufficient contexts the model correctly called INSUFFICIENT.
+
+\paragraph{A confound, and how we remove it.} Every condition with three or more paragraphs is sufficient (sufficient plus a distractor, sufficient plus a duplicate, full context). Every insufficient condition has at most two. Paragraph count, and with it prompt length, therefore separates part of the state task on its own. This inflates the state probe's headline AUROC ($0.99$) and makes its recall on wrong abstentions in the three larger families trivially perfect. We therefore also report a \emph{paragraph-count-matched} version. It keeps only two-paragraph contexts: the minimal sufficient context against distractors only and the penultimate state plus a distractor, a duplicate or an answer-string control. The probe is retrained on these contexts alone, so neither count nor length can separate the classes. The count-matched numbers are the ones we interpret.
+
+\begin{table*}[t]
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{tables/verbal_internal}
+\caption{Verbalised versus internal sufficiency judgements on held-out contexts (document split; falsified-evidence contexts excluded). Verbalised: the model answers (judged sufficient) or says INSUFFICIENT. Probe: state-sufficiency probe at the answer-start anchor of the same forward pass; thresholds are set on training contexts. ``Wrong abstentions'': sufficient contexts the model called INSUFFICIENT; ``correct abstentions'': insufficient contexts it called INSUFFICIENT. Mean probe scores are expressed so that $0$ is the mean of insufficient and $1$ the mean of sufficient training contexts. Top block: all contexts, inflated by paragraph count. Bottom block: two-paragraph contexts only, with the probe retrained on them.}
+\label{tab:verbal_internal}
+\end{table*}
+
+\paragraph{Results (\cref{tab:verbal_internal}).}
+\begin{itemize}
+  \item \textbf{The verbalised judgement is wrong on a third or more of sufficient contexts.} On held-out data the models call $33\%$ (Qwen), $40\%$ (Llama) and $43\%$ (Mistral) of sufficient contexts INSUFFICIENT, while still answering $15$--$21\%$ of insufficient ones. As a sufficiency classifier the output reaches $0.76$, $0.72$ and $0.68$ AUROC ($0.77$, $0.77$, $0.71$ on two-paragraph contexts).
+  \item \textbf{The internal state is far more accurate, with paragraph count held fixed.} On two-paragraph contexts the retrained probe separates minimal sufficient from insufficient contexts at $0.976$, $0.981$ and $0.986$ AUROC. This is $0.20$--$0.27$ above the verbalised judgement made in the same forward pass.
+  \item \textbf{It is accurate precisely where the verbalised judgement fails.} Restricted to the two-paragraph contexts the model called INSUFFICIENT, so that the output is held fixed, the probe still separates the sufficient ones from the insufficient ones at $0.967$--$0.982$. At $0.95$ training precision it recovers $76\%$, $77\%$ and $81\%$ of the wrongly rejected minimal sufficient contexts, with $3$--$4\%$ false alarms on correctly rejected insufficient ones. At the verbalised false-alarm rate it recovers $96$--$99\%$ of them. In practical terms, a detector reading the anchor before generation would accept most of the complete evidence the model itself refuses, at a fraction of the false alarms the model's own answers produce.
+  \item \textbf{But the internal state is weaker in exactly those cases.} In units where the insufficient training mean is $0$ and the sufficient one is $1$, wrongly rejected minimal sufficient contexts score $0.82$, $0.80$ and $0.87$, against $1.03$ for sufficient contexts the model answers. Insufficient contexts score about $0$ when rejected and $0.08$--$0.16$ when (wrongly) answered. The internal sufficiency state is graded. The verbal decision behaves like a thresholded and noisier read-out of it, which tends to fail when the state is weaker than usual, but the state in those cases is still much closer to ``sufficient'' than to ``insufficient''. (Without the count matching, the wrongly rejected contexts appear to score as high as answered ones, $1.03$--$1.15$. That impression comes from the larger, trivially separable families and should not be relied on.)
+  \item \textbf{Adding paragraphs hurts the verbal judgement.} The abstention rate on sufficient contexts rises from $29$--$37\%$ (minimal) to $40$--$60\%$ (full context), while every wrongly rejected full-context prompt is still on the sufficient side of the probe's threshold. Paragraph count makes that last comparison easy, so we do not interpret it further.
+\end{itemize}
+
+\subsection{Holding the output fixed for the update probes}
+
+The same question can be asked of the update probes of \cref{tab:probes}: is ``the evidence just became sufficient'' anything more than ``the model just switched from INSUFFICIENT to an answer''? \Cref{tab:behaviour_control} reports, for the sufficiency and matched-sufficiency tasks with $\Delta h$ and with $h(C_k)$ (\cref{app:rep}), and for the state-sufficiency task, four numbers:
+\begin{itemize}
+  \item the AUROC of the output alone: the indicator that the model answers at $C_k$ (for updates, the indicator that it switched from INSUFFICIENT to an answer scores within $0.04$ of this);
+  \item the standard probe, trained on all increments, scored separately on the test increments after which the model \emph{still says INSUFFICIENT} and on those after which it answers (``stratified'');
+  \item probes trained \emph{and} tested only within each of these two groups (``within''). Within the abstaining group, the positives are decisive increments that completed the evidence while the model went on refusing, and the negatives are controls after which it also refused.
+\end{itemize}
+
+\begin{table*}[t]
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{tables/behaviour_control}
+\caption{Sufficiency probes with the model's output held fixed (document split). Output only: AUROC of the indicator ``the model answers at $C_k$''. All: standard probe, all test increments. Stratified: the same probe on the test increments after which the model abstains (resp.\ answers). Within: probe trained and tested only on that group, layer re-selected by grouped inner cross-validation. The state-sufficiency rows are not count-matched (see \cref{tab:verbal_internal} for the count-matched version).}
+\label{tab:behaviour_control}
+\end{table*}
+
+The output alone gives $0.65$--$0.76$. The probes lose almost nothing when the output is held fixed. Among increments after which the model still says INSUFFICIENT, the $\Delta h$ sufficiency probe scores $0.940$--$0.949$ (stratified) and $0.935$--$0.944$ (within), against $0.945$--$0.950$ overall; for $h(C_k)$ the corresponding figures are $0.930$--$0.944$ and $0.914$--$0.933$. Among increments after which the model answers, the probes score slightly lower ($0.929$--$0.942$ for $\Delta h$), because there the controls that the model answers (false evidence, answer-string controls) are the hardest ones. On the matched task, where every control starts from the same state as the decisive increment, the probes reach $0.883$--$0.887$ even when trained and tested only on increments the model refuses.
+
+\subsection{What this does and does not show}
+
+\begin{itemize}
+  \item \textbf{The sufficiency readout is not the planned output.} If the probes were reading ``about to output INSUFFICIENT'', they would fall to chance once the output is held fixed. They stay at $0.88$--$0.99$ depending on the task. The residual stream at the answer-start position encodes that the context contains the complete evidence, separately from the decision to answer.
+  \item \textbf{The internal signal is a better sufficiency detector than the model's self-report.} For a system that has to decide whether retrieved evidence is complete, the anchor activation, read before generation, is more accurate than asking the model and reading its answer: $0.98$ against $0.71$--$0.77$ AUROC with paragraph count matched. At $0.95$ precision the probe accepts $86$--$91\%$ of sufficient contexts with $4\%$ false alarms, whereas the model's answers accept $63$--$71\%$ with $15$--$21\%$ false alarms.
+  \item \textbf{This is a statement about evidence completeness, not about the answer.} The probe is trained on construction labels (all gold hops present). A high score on a wrongly rejected context says that the representation registers the evidence as complete. It does not say that the model could compute the answer from it. Whether it will is what uptake measures (\cref{sec:readout}), and uptake is lower and nearly orthogonal to sufficiency. Among the minimal sufficient contexts it rejects, the model may lack the bridging step, and the internal sufficiency state cannot supply it. Consistently, using the sufficiency score to stop retrieval does not by itself improve accuracy (\cref{app:adaptive}): stopping at a sufficient context the model will not answer from still yields INSUFFICIENT.
+  \item \textbf{The causal picture is consistent with this division.} The one causally active direction, $\vdm$, acts as an abstention gate (\cref{sec:causal}): pushing along it makes the model answer, including on some sufficient contexts it was rejecting (positive steering adds $3$ points of correct answers on Qwen and $18$ on Llama), but also on distractors and false evidence. The sufficiency \emph{readout} is not that gate: projecting the probe direction out changes nothing. The model represents completeness accurately along directions it does not use for the answer/abstain decision, and its decision is driven by a lower-dimensional, noisier gate.
+  \item \textbf{Scope.} The comparison uses \musique{} two-hop questions the models answer incorrectly closed-book, under the evidence-only instruction. With a more permissive instruction (\cref{app:augmented}), the models abstain less on sufficient evidence and follow false evidence more, so the verbalised false-negative rate depends on the prompt; the internal update readout barely changes ($0.945$ against $0.948$).
+\end{itemize}
+
+\subsection{Uptake and the decision to answer}
+\label{app:uptake-answer}
+The same question can be asked of the uptake probe: how much of its $0.78$ AUROC is the model's own decision to answer? Uptake is positive when the decisive increment makes the answer correct, and a correct answer is by definition an answer, whereas $45$--$55\%$ of the decisive increments the model fails to take up are ones after which it says INSUFFICIENT. The indicator ``the model answers after the increment'' therefore reaches $0.78$ on its own, exactly the probe's AUROC (\cref{tab:baselines}). \Cref{tab:uptake_given} restricts the comparison to the decisive increments the model answers, where the only remaining question is whether the answer is right. Three internal or output signals are compared there: the output confidence (negative next-token entropy at the anchor; top-token probability gives the same numbers to within $0.005$), the stored uptake probe trained on all decisive increments, and a probe refitted on the answered increments only, at the stored best layer. The right-hand block combines each signal with the decision to answer, ranking abstentions below every answer and answers by the signal.
+
+\begin{table*}[t]
+\centering\small
+\input{tables/uptake_given_answer}
+\caption{Uptake among the decisive increments the model answers (document split, test questions). $n$: answered test increments; ``correct'': fraction correct among them. Left: AUROC for correct against wrong answers of output confidence, of the uptake probe trained on all decisive increments, and of a probe refitted on answered increments. Right: AUROC on all decisive increments of the decision to answer alone and combined with confidence or with the refitted probe.}
+\label{tab:uptake_given}
+\end{table*}
+
+Among answered increments the probe separates correct from wrong answers at $0.63$--$0.68$ and confidence at $0.63$--$0.64$: the probe is ahead by $0.03$ on Qwen and $0.05$ on Llama and level on Mistral. Combined with the decision to answer, the probe reaches $0.84$--$0.86$ and confidence $0.84$. Two things follow. The uptake probe does carry information that the text does not have (no text classifier exceeds $0.60$) and that the model's output does not fully have, but the larger part of its $0.78$ is the decision to answer, which the model verbalises for free. And the part specific to correctness is modest and only a little better than the model's own confidence, so claims that internal states predict evidence uptake should be read with this decomposition in mind. The verification experiment of \cref{app:adaptive}, which uses the uptake direction to decide whether to trust the answer given once retrieval stops, measures the same quantity on a different set of contexts and reaches the same conclusion.

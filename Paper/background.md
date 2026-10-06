@@ -222,6 +222,16 @@ Three analyses answer the reviewer question "how much of the 0.95 is the *change
   * Wrongly rejected contexts score 0.80–0.87 on a 0 (insufficient) to 1 (sufficient) scale, against 1.03 for answered ones, so the internal state is graded and the verbal decision is a noisier thresholded read-out.
 * Tables come from `Paper/figures/make_state_tables.py`: `rep_ablation.tex`, `behaviour_control.tex`, `verbal_internal.tex`. The write-up is in Appendix C (behaviour), Appendix D (state vs update) and the readout subsection "What the probes read".
 
+### 5.10 Self-verbalisation and confidence baselines (added 2026-10-06)
+
+`revise/analysis/self_verbal_baseline.py` scores, on exactly the test increments of the probes and text baselines (document split), the model's own output as a classifier: "answers rather than INSUFFICIENT at C_k", the switch from INSUFFICIENT to an answer, and output confidence (top-token probability, negative entropy, and their change over the increment). `Paper/figures/make_baselines_table.py` builds `tables/baselines.tex` (text classifiers + verbalised + confidence + probe) and `tables/uptake_given_answer.tex`.
+
+* Sufficiency: verbalised 0.65–0.69 (matched 0.67–0.73); confidence below 0.5 (INSUFFICIENT is a confident output); probe 0.95 / 0.91.
+* Uptake: the "answers" indicator alone gives 0.78, the same as the probe, because 45–55% of non-uptake decisive increments are abstentions. Among answered decisive increments the probe separates correct from wrong at 0.63–0.68 vs 0.63–0.64 for confidence; combined with the decision to answer, 0.84–0.86 vs 0.84. So the uptake probe largely reads the decision to answer and the correctness-specific part is modest. The paper now says this plainly (§5.2, Appendix C "Uptake and the decision to answer", Limitations).
+* Correction and stability are predicted by "answers" at 0.88–0.90 / 0.80–0.90, above the probes, which is one reason they moved to an appendix.
+
+Paper layout from 2026-10-06: the ACL-style sources live in `Paper_acl/` (times font and acl.sty untouched) and are zipped as `new_revision.zip`; `Paper/` keeps the generation scripts. Main-text order after revision-2: intro, related work, setup (data, trajectories, tasks table, splits, baselines), method (probes, nuisance, generalisation, causal tests), readout + baselines, causal (trimmed), generalisation, conclusion, limitations; discussion dropped; layer depth, projections by kind, correction/stability/revision, subspace rank and adaptive retrieval moved to appendices.
+
 ---
 
 ## 6. Causal validation: readout versus mechanism

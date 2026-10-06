@@ -1,0 +1,13 @@
+\section{How many dimensions the causal content needs}
+\label{app:subspace}
+
+\Cref{sec:causal} shows that patching the whole anchor residual of the insufficient prompt with the sufficient prompt's makes the model answer, while the component along the probe direction does nothing. To measure how many dimensions the causal content occupies, \cref{fig:subspace} patches only the part of the sufficient-minus-insufficient update that lies in the top-$k$ principal components of the decisive updates seen in training, for $k\in\{1,4,16,64,256\}$, and compares with a random 256-dimensional subspace, with the gold answer's unembedding direction alone, and with everything but that direction.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.84\linewidth]{subspace_rank}
+\caption{The insufficient prompt patched with the sufficient-minus-insufficient update projected on the top-$k$ principal components of training updates, on a random 256-dimensional subspace, on the gold answer's unembedding direction (``unemb''), or on everything but that direction.}
+\label{fig:subspace}
+\end{figure*}
+
+The answering rate rises gradually with $k$ (Qwen: $0.29$ at $k{=}1$, $0.49$ at $k{=}16$, $0.59$ at $k{=}256$, $0.71$ for the full update), while the random 256-dimensional subspace does nothing. Correctness needs even more of the update than answering does. The first component carries much of the switch between answering and abstaining, which is consistent with the projection-out result for $\vdm$. What carries correctness differs by model. On Llama the gold answer's unembedding direction alone restores $0.19/0.62$ (correct/answered), most of the full effect. On Qwen and Mistral it restores little ($0.09/0.19$, $0.07/0.19$), although removing it from the full patch halves Qwen's correctness ($0.26\to0.13$). Mistral's and the 3--4-hop run's effects are captured by the top principal components instead ($0.56$ and $0.51$ answered at $k{=}256$). The causal content is thus high-dimensional and model-specific, and \cref{app:patch-single} shows that it is concentrated in the later layers.

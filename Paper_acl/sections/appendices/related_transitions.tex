@@ -1,0 +1,23 @@
+\section{Related transitions: correction, stability and revision}
+\label{app:related}
+
+Sufficiency and uptake are the two properties the paper is about, but every increment carries the model's full behavioural transition, and this lets us probe three related properties with the same machinery. \emph{Correction} is defined on increments that start from a wrong or abstaining answer and asks whether the answer becomes correct; unlike uptake it includes non-decisive increments, so a correct answer may also come from guessing a hop or from a falsified paragraph. \emph{Stability} is defined on increments that start from a correct answer and asks whether it stays correct. \emph{Revision} is defined on all increments and asks whether the answer changes at all. \Cref{tab:probes_full} gives the probe results alongside those of the main text.
+
+\begin{table*}[t]
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{tables/probes_models_full}
+\caption{Held-out AUROC of the best-layer probe on paired updates for all five tasks (document split; 95\% question-level bootstrap intervals), with the nuisance-only AUROC and the gain from adding the probe score to the nuisance classifier.}
+\label{tab:probes_full}
+\end{table*}
+
+\paragraph{Results.} Correction is readable at $0.73$--$0.82$ and stability at $0.75$--$0.87$, but both are largely explained by surface properties, chiefly the change in the model's output distribution: the nuisance-only classifier reaches $0.81$--$0.85$ on correction and $0.90$--$0.92$ on stability, and the probe adds at most $0.06$. Revision is readable at $0.71$--$0.77$ (\cref{tab:rep_ablation}). The model's own output is an even stronger predictor of these three: whether the model answers after the increment predicts correction at $0.88$--$0.90$ and stability at $0.80$--$0.90$, because a corrected answer is by definition an answer and a destabilised one is often an abstention. These tasks are therefore less informative about the internal state than uptake, which is the one task on which the activations add far more than surface properties or the output.
+
+\paragraph{Cross-task transfer.} \Cref{fig:transfer} applies the direction learned for one task (row) to the increments of another (column), at the row task's best layer, on the test questions of the document split. Uptake and correction share a direction: the cosine between them is $0.30$--$0.34$, and each predicts the other task at $0.82$. Both are nearly orthogonal to sufficiency (cosine $0.02$--$0.03$), whose direction reaches only $0.54$--$0.60$ on uptake. Stability and revision form a third group, aligned with the change in output distribution.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{transfer_matrix}
+\caption{Cross-task transfer (Qwen2.5-7B, document split): AUROC of the direction learned for the row task, evaluated on the column task.}
+\label{fig:transfer}
+\end{figure}

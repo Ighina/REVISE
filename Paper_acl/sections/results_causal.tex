@@ -1,0 +1,28 @@
+\section{Readouts, not levers: causal tests}
+\label{sec:causal}
+
+The probes of \cref{sec:readout} read sufficiency and uptake accurately. We now ask, as a corollary, whether the directions they read are also the ones the model uses to decide. The tests of \cref{sec:method} are applied to the logistic probe direction $\vlr$ and to the difference-of-means direction $\vdm$; \cref{tab:causal} gives the results.
+
+\begin{table*}[t]
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{tables/causal}
+\caption{Causal tests on 150 held-out questions, intervening at every layer from the best sufficiency layer onward. Left: the insufficient prompt with its anchor residual patched from the sufficient prompt (correct / answered rate). ``none'': no patch; ``full'': the whole residual; $\parallel v$ and $\perp v$: only the component along, or orthogonal to, the probe direction; ``rand-256'': a random 256-dimensional subspace; PC1, PC256: the top 1 or 256 principal components of training updates; ``unemb.'': the gold answer's unembedding direction. Right: the sufficient prompt with the component along a direction set to its insufficient-state value (answered rate). $\vdm$: difference-of-means direction; $\vlr$: logistic-probe direction.}
+\label{tab:causal}
+\end{table*}
+
+\paragraph{Probe directions are inert.}
+Steering along the logistic sufficiency or uptake direction changes no rate at any strength from $0.7$ to $22$ units of $\ell_2$ norm, up to 35\% of the typical norm of the residual stream, and a random direction of the same norm is equally inert, so the null result is not a matter of dose (\cref{app:steer-lr}). Patching only the component of the sufficient-minus-insufficient update that lies along the probe direction leaves the insufficient prompt's behaviour unchanged in all three models (``$\parallel v$'' in \cref{tab:causal}), and projecting the direction out of sufficient prompts changes nothing either ($\vlr$ column).
+
+\paragraph{The anchor residual is causally sufficient, but outside the probe direction.}
+Replacing the insufficient prompt's anchor residual with the sufficient prompt's takes Qwen from $0.04/0.13$ (correct/answered) to $0.26/0.71$ and Llama from $0.02/0.11$ to $0.24/0.74$, about half the correctness the model reaches when the paragraph is actually present; Mistral shows the same pattern with a weaker effect ($0.09/0.60$). Removing the probe component from the patch leaves the effect intact (``$\perp v$''). The single anchor position carries enough to make the model answer, often correctly, but none of that content lies along the direction the probe reads. The content is also high-dimensional: restricted to the top principal components of training updates, the effect grows gradually with their number, and a random 256-dimensional subspace does nothing (\cref{app:subspace}).
+
+\paragraph{The mean-difference direction is an abstention gate.}
+The one direction with a causal effect is $\vdm$, which the logistic probe does not align with. Setting its component to the insufficient-state value makes all three models abstain on essentially every sufficient prompt (answered $0.01$, $0.00$, $0.01$, against $0.72$, $0.73$, $0.63$ for a random direction treated identically), and equally on prompts with falsified evidence. Steering along it at low strength gives a graded, monotone response in both directions, while the random control stays flat (\cref{fig:steer}; full numbers in \cref{app:steer-dm}). At $\alpha=-1$ Qwen answers $34\%$ of sufficient prompts instead of $71\%$, with unchanged precision among the answers it still gives. The positive direction, however, is indiscriminate. At $\alpha=+1$ the models answer more often on distractor-only prompts (Qwen $0.03\to0.12$, Llama $0.03\to0.29$, Mistral $0.03\to0.28$), on insufficient prompts ($0.13\to0.26$, $0.11\to0.51$, $0.17\to0.47$) and on answer-string controls, and Llama follows falsified evidence twice as often ($0.19\to0.39$), while correct answers on sufficient prompts gain only $3$ points on Qwen and $18$ on Llama. A direction that makes the model accept any passage governs whether it answers, not whether it integrates evidence. The sufficiency readout and the abstention decision are thus carried by different directions, which fits the observation of \cref{sec:text} that the state registers complete evidence even when the model refuses to answer.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.84\linewidth]{steer_dose_response}
+\caption{Dose-response of difference-of-means steering (four layers from the best sufficiency layer, from the anchor onward; $\alpha$ in units of the sufficient-minus-insufficient gap). Negative $\alpha$ induces abstention everywhere; positive $\alpha$ induces answering everywhere, including on distractors and false evidence.}
+\label{fig:steer}
+\end{figure*}

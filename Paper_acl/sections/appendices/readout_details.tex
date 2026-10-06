@@ -1,0 +1,22 @@
+\section{Readout details: layer depth and projections by increment kind}
+\label{app:readout}
+
+\paragraph{Layer depth.}
+Every probe in the paper is fitted at every layer, and the main text reports the layer selected by grouped cross-validation on the training questions. \Cref{fig:layers} shows the full profile. Sufficiency is readable from early layers and peaks at 50--60\% of the network's depth in all three models (layer 17 of 28 for Qwen), after which it declines slowly. Uptake and correction emerge later and peak near the end of the network (layer 26 of 28 for Qwen), which is where the content that determines the answer is assembled. The matched sufficiency task follows the sufficiency profile a few points lower. The same picture holds on the question, answer and relation splits.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.84\linewidth]{auroc_by_layer}
+\caption{Held-out AUROC by relative depth for the update tasks (document split). Sufficiency peaks around mid-depth in every model; uptake and correction emerge later.}
+\label{fig:layers}
+\end{figure*}
+
+\paragraph{Projections by increment kind.}
+\Cref{fig:kinds} projects every held-out increment onto the sufficiency direction, that is, it computes its score along the probe's weight vector, and averages by kind of increment. The kinds are ordered as one would expect if the direction encoded ``the evidence has just become complete'': decisive $>$ falsified $>$ distractor $>$ duplicate $>$ answer-string control $>$ a gold paragraph that does not yet complete the evidence. Increments added after the context is already sufficient, and the first hop added to an empty context, score far below. That the falsified paragraph scores second indicates that the direction encodes ``the final slot has been filled'' rather than truth, which is all the model can register before it generates; the behavioural counterpart is that a falsified final paragraph halves abstention (\cref{app:behaviour}).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{projection_by_kind}
+\caption{Mean projection of held-out increments on the sufficiency direction, by kind of increment (Qwen2.5-7B, document split; standard errors). Red: decisive.}
+\label{fig:kinds}
+\end{figure}

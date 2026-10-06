@@ -1,0 +1,41 @@
+\section{Reading sufficiency and uptake before generation}
+\label{sec:readout}
+
+Every number in this section is the AUROC of a probe on held-out questions of the document split, at the layer chosen by cross-validation on the training questions.
+
+\begin{table*}[t]
+\centering\small
+\setlength{\tabcolsep}{3pt}
+\input{tables/probes_models}
+\caption{Held-out AUROC of the probe on paired updates $\Delta h$ (document split; 95\% question-level bootstrap intervals). ``nuis.'': a classifier that sees only surface properties of the increment (length change, presence of the answer string, lexical relevance, change in output confidence). ``gain'': AUROC added when the probe score is given to that classifier.}
+\label{tab:probes}
+\end{table*}
+
+\paragraph{Sufficiency.}
+A probe trained to recognise the decisive increment separates it from all other increments at $0.948$--$0.952$ AUROC in the three models (\cref{tab:probes}). Against the matched controls alone, which start from the same penultimate context and add a distractor, a duplicate, a falsified paragraph or an answer-string control instead of the missing paragraph, it still reaches $0.91$--$0.92$. Surface properties do not explain this. A classifier on the nuisance vector reaches $0.86$--$0.87$, the probe adds $0.11$--$0.12$ on top of it, and a probe trained after the nuisance covariates have been regressed out of the activations still reaches $0.94$--$0.96$. The result is the same under question-, answer- and relation-disjoint splits ($0.94$--$0.96$, \cref{app:splits}). The signal is strongest at 50--60\% of the network's depth, and projections onto the direction order the increment kinds as one would expect if it encoded ``the evidence has just become complete'': decisive first, then falsified, distractor, duplicate and answer-string additions, with additions to an already sufficient context far below (\cref{app:readout}).
+
+\paragraph{Uptake.}
+Among decisive increments, a second probe predicts whether the model will use the new paragraph, that is, whether its answer becomes correct, at $0.77$--$0.78$ ($0.85$--$0.87$ on the question split), at layers near the end of the network. This is the task on which the activations add most beyond surface properties: the nuisance classifier reaches only $0.58$--$0.66$ and the probe adds $0.14$--$0.21$. Uptake is a different signal from sufficiency. The two directions are nearly orthogonal (cosine $0.02$--$0.03$), and the sufficiency direction, used to predict uptake, scores only $0.54$--$0.60$.
+
+\paragraph{State or update?}
+One may ask whether the subtraction in $\Delta h$ matters. Refitting the probes on the raw state after the addition, $h(C_k)$, gives $0.93$--$0.94$ for sufficiency and $0.77$--$0.80$ for uptake, and a probe on the concatenation of both states matches $\Delta h$; the state before the addition is uninformative beyond the stage of the trajectory it belongs to (\cref{app:rep}). The information therefore sits in the model's state after it has seen the evidence. The paired update is a controlled way of reading it: it discards what both contexts share and lets every decisive increment be compared with controls from the same starting point.
+
+\subsection{Do internal states beat the obvious baselines?}
+\label{sec:text}
+A practitioner who wants to know whether the evidence is sufficient, or whether the model will use it, has two cheaper options: a text classifier on the same input, or the model's own output, which under our instruction is an explicit verdict on sufficiency. \Cref{tab:baselines} compares both with the probe on the same test increments.
+
+\begin{table*}[t]
+\centering\small
+\setlength{\tabcolsep}{2.5pt}
+\input{tables/baselines}
+\caption{Baselines on the same test increments as the probe (document split, AUROC). Text classifiers see the question and the added paragraph (``q+added'') or also the previous context (``+context''). ``verbalised'': the model answers rather than saying INSUFFICIENT after the increment. ``confidence'': the better of top-token probability and negative entropy at the anchor. The matched task has text baselines for Qwen only.}
+\label{tab:baselines}
+\end{table*}
+
+\paragraph{Text classifiers.}
+For sufficiency, TF-IDF reaches $0.62$ and a DeBERTa that sees only the question and the added paragraph $0.72$--$0.73$. A DeBERTa that also sees the previous context reaches $0.89$--$0.92$, below the probe's $0.95$ but not by much: sufficiency is largely a property of the input, and the model's state is an accurate readout of it. Uptake is the opposite case. No text classifier exceeds $0.60$ on the same increments ($0.63$ with a larger training budget), against $0.77$--$0.78$ for the probe. Whether the model will use a paragraph is not visible in the paragraph.
+
+\paragraph{The model's own judgement.}
+The verbalised judgement is a weak sufficiency detector. Whether the model answers after the increment separates decisive from other increments at only $0.65$--$0.69$ ($0.67$--$0.73$ on the matched task), because the models say INSUFFICIENT on a third or more of complete contexts (\cref{sec:setup}). Output confidence is no better; it is in fact slightly \emph{lower} after the decisive paragraph than after a control, since INSUFFICIENT is a confident output. The internal state is far ahead. A probe that classifies single contexts as sufficient or not, read at the same anchor of the same forward pass and restricted to two-paragraph contexts so that paragraph count cannot help, reaches $0.976$--$0.986$ against $0.71$--$0.77$ for the verbalised judgement, and it stays at $0.967$--$0.982$ among the contexts the model rejects. With its threshold set for $0.95$ precision on training data, it recovers $76$--$81\%$ of the complete contexts the model wrongly called insufficient, with $3$--$4\%$ false alarms on the incomplete ones it rightly rejected. The update probes behave the same way when the output is held fixed: trained and tested only on increments after which the model still says INSUFFICIENT, they reach $0.935$--$0.944$, against $0.65$--$0.69$ for the output itself. The sufficiency readout is therefore not the model's planned output. The residual stream registers that the evidence is complete even when the answer denies it (\cref{app:behaviour}).
+
+For uptake the picture is more nuanced, and \cref{tab:baselines} shows it plainly. Whether the model answers at all predicts uptake at $0.78$, the same AUROC as the probe, because about half of the decisive increments the model fails to take up are ones after which it says INSUFFICIENT. The informative comparison is among the decisive increments the model does answer, where the question becomes whether the answer is right. There, the probe separates correct from wrong answers at $0.63$--$0.68$ and output confidence at $0.63$--$0.64$, with the two nearly identical on Mistral (\cref{tab:uptake_given} in \cref{app:behaviour}). Combining the decision to answer with the probe gives $0.84$--$0.86$, against $0.84$ with confidence. So the internal state does carry uptake information that neither the text nor the model's output has, but much of what the uptake probe reads at $0.78$ is the model's own decision to answer, and the part specific to correctness is modest.

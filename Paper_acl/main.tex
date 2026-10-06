@@ -1,0 +1,92 @@
+% Placeholder preamble: replace \documentclass and packages with the venue style.
+\documentclass[11pt]{article}
+
+% Change "review" to "final" to generate the final (sometimes called camera-ready) version.
+% Change to "preprint" to generate a non-anonymous version with page numbers.
+\usepackage[review]{acl}
+
+% Standard package includes
+\usepackage{times}
+\usepackage{latexsym}
+
+% For proper rendering and hyphenation of words containing Latin characters (including in bib files)
+\usepackage[T1]{fontenc}
+% For Vietnamese characters
+% \usepackage[T5]{fontenc}
+% See https://www.latex-project.org/help/documentation/encguide.pdf for other character sets
+
+% This assumes your files are encoded as UTF8
+\usepackage[utf8]{inputenc}
+
+% This is not strictly necessary, and may be commented out,
+% but it will improve the layout of the manuscript,
+% and will typically save some space.
+\usepackage{microtype}
+
+% This is also not strictly necessary.
+% However, it will improve the aesthetics of text in
+% the typewriter font.
+\usepackage{inconsolata}
+
+%Including images in your LaTeX document requires adding
+%additional package(s)
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage[capitalize]{cleveref}
+\graphicspath{{figures/}}
+
+\newcommand{\musique}{MuSiQue}
+\newcommand{\twowiki}{2WikiMultiHopQA}
+\newcommand{\vdm}{v_{\mathrm{dm}}}
+\newcommand{\vlr}{v_{\mathrm{lr}}}
+
+\title{The Evidence Within: Evidence Sufficiency and Uptake in the Residual Stream of Retrieval-Augmented LLMs}
+\author{Iacopo Ghinassi, Mingye Zhu}
+\date{}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/setup}
+\input{sections/method}
+\input{sections/results_readout}
+\input{sections/results_causal}
+\input{sections/results_external}
+\input{sections/conclusion}
+\input{sections/limitations}
+% \input{sections/discussion}   % kept for reviewers' questions on why probe directions are not levers
+
+\bibliography{references}
+
+\appendix
+\input{sections/appendices/conditions}
+\input{sections/appendices/probing_details}
+\input{sections/appendices/readout_details}
+\input{sections/appendices/related_transitions}
+\input{sections/appendices/rep_ablation}
+\input{sections/appendices/behaviour}
+\input{sections/appendices/splits}
+\input{sections/appendices/augmented}
+\input{sections/appendices/transfer}
+\input{sections/appendices/conversational}
+\input{sections/appendices/multihop}
+\input{sections/appendices/twowiki}
+\input{sections/appendices/closedbook}
+\input{sections/appendices/steer_lr}
+\input{sections/appendices/steer_dm}
+\input{sections/appendices/subspace}
+\input{sections/appendices/patching_single}
+\input{sections/appendices/adaptive}
+\input{sections/appendices/groups}
+\input{sections/appendices/estb}
+\input{sections/appendices/compute}
+
+\end{document}
