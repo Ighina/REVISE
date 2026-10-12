@@ -7,10 +7,14 @@ the number quoted for the retrieved-evidence conditions.
 """
 import collections
 import logging
+import sys
 import time
+from pathlib import Path
 
-from revise.data.retrieval import E5Retriever, WikiCorpus, label_passages, merge_hits, question_queries
-from revise.experiment import Run, load_config
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # run from a checkout without installing
+
+from revise.data.retrieval import E5Retriever, WikiCorpus, label_passages, merge_hits, question_queries  # noqa: E402
+from revise.experiment import Run, load_config  # noqa: E402
 
 N_QUESTIONS = 200
 K = 30

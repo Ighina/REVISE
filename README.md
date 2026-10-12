@@ -96,6 +96,7 @@ running it.
 | `run_readout_analyses.sh` | the read-out appendix: state vs update representations, output-controlled probes, verbalised vs internal sufficiency | in-domain |
 | `run_adaptive_results.sh` | the adaptive-retrieval appendix (every direction as a stopping rule and as a verifier) | the runs it is given |
 | `run_estb.sh` | the ESTB appendix: retrieved (BM25 / E5) and LLM-rewritten evidence | in-domain |
+| `export_estb_csv.py` | the evidence trajectories as CSV, for sharing or for use outside this pipeline | — |
 | `make_paper_artifacts.sh` | all the LaTeX tables and PDF figures, plus `numbers.json` | whichever runs exist |
 | `run_all.sh` | all of the above in dependency order (weeks of GPU time) | — |
 
@@ -132,6 +133,35 @@ shared by every later run):
 python scripts/build_retrieval_index.py   # parse the corpus, build the BM25 index (hours)
 python scripts/check_e5_retrieval.py      # fetch and concatenate the E5 FAISS index; reports gold recall
 ```
+
+### Exporting the benchmark as CSV
+
+The ESTB is constructed rather than downloaded, so it can also be written out as
+plain data and used without this pipeline:
+
+```bash
+python scripts/export_estb_csv.py                                   # synthetic, 500 questions
+python scripts/export_estb_csv.py --dataset musique --hops 2 --n-questions 200
+```
+
+This writes two files to `$REVISE_SCRATCH/estb_csv` (override with `--out-dir`):
+
+| file | one row per | key columns |
+|---|---|---|
+| `estb_conditions.csv` | evidence context | `sufficient`, `condition_name`, `n_gold`, `has_false`, `paragraph_roles`, `context` (the evidence block exactly as the prompt renders it) |
+| `estb_increments.csv` | transition `C_{k−1} → C_k` | `kind`, `is_decisive`, `becomes_sufficient`, `from_sufficient`/`to_sufficient`, `control_group`, `added_text` |
+
+Both repeat the question, answer and hop count on every row, so each file stands
+alone. The `synthetic` dataset is generated locally and needs neither network
+access nor a model; the benchmark datasets are fetched from the Hub.
+
+The labels in these files are the ones the construction determines —
+`sufficient`, `kind`, `becomes_sufficient`, `is_decisive`. The **behavioural**
+labels (uptake, correction, stability, `state_from`/`state_to`) describe what a
+specific model did with the evidence, so they exist only after `collect` has run
+for that model; the exporter does not invent them. Note also that `sufficient`
+is true for `sufficient_plus_false`, where every gold hop is present and a
+*conflicting* paragraph has been added on top.
 
 ## The pipeline
 

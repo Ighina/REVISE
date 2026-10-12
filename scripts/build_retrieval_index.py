@@ -5,9 +5,13 @@ hours, and the caches it writes under ``$REVISE_SCRATCH/retrieval`` are reused
 by every later run.  Prints the top hits for two MuSiQue questions as a check.
 """
 import logging
+import sys
 import time
+from pathlib import Path
 
-from revise.data.retrieval import BM25Retriever, WikiCorpus
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # run from a checkout without installing
+
+from revise.data.retrieval import BM25Retriever, WikiCorpus  # noqa: E402
 
 QUERIES = ["Who is the spouse of the Green performer?", "What is the capital of the region containing Nuevo Laredo?"]
 
