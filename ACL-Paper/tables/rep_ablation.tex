@@ -1,0 +1,26 @@
+\begin{tabular}{llcccc}
+\toprule
+Model & Task & $h(C_{k-1})$ & $h(C_k)$ & $\Delta h$ & $[h(C_{k-1});h(C_k)]$ \\
+\midrule
+Qwen2.5-7B & Sufficiency & 0.733 & 0.930 & 0.947 & \textbf{0.949} \\
+ & Sufficiency (matched) & 0.500 & 0.901 & 0.911 & \textbf{0.919} \\
+ & Uptake & 0.605 & \textbf{0.798} & 0.775 & 0.780 \\
+ & Correction & 0.574 & 0.766 & 0.730 & \textbf{0.782} \\
+ & Stability & 0.549 & 0.813 & 0.750 & \textbf{0.832} \\
+ & Revision & 0.556 & \textbf{0.806} & 0.767 & 0.791 \\
+\midrule
+Llama-3.1-8B & Sufficiency & 0.733 & 0.936 & \textbf{0.952} & 0.950 \\
+ & Sufficiency (matched) & 0.500 & 0.908 & 0.917 & \textbf{0.923} \\
+ & Uptake & 0.570 & \textbf{0.794} & 0.783 & 0.788 \\
+ & Correction & 0.522 & 0.872 & 0.818 & \textbf{0.883} \\
+ & Stability & 0.592 & 0.882 & 0.869 & \textbf{0.888} \\
+ & Revision & 0.563 & \textbf{0.795} & 0.709 & 0.751 \\
+\midrule
+Mistral-7B & Sufficiency & 0.733 & 0.940 & 0.948 & \textbf{0.949} \\
+ & Sufficiency (matched) & 0.500 & 0.900 & \textbf{0.910} & 0.907 \\
+ & Uptake & 0.647 & 0.769 & 0.771 & \textbf{0.775} \\
+ & Correction & 0.566 & \textbf{0.822} & 0.790 & 0.819 \\
+ & Stability & 0.524 & \textbf{0.857} & 0.800 & 0.857 \\
+ & Revision & 0.634 & 0.789 & 0.721 & \textbf{0.790} \\
+\bottomrule
+\end{tabular}

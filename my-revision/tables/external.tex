@@ -1,0 +1,13 @@
+\begin{tabular}{lcccccccccccc}
+\toprule
+& \multicolumn{4}{c}{within-dataset probes (AUROC)} & \multicolumn{2}{c}{MuSiQue dir.} & \multicolumn{4}{c}{patched insufficient (answered)} & \multicolumn{2}{c}{proj.-out (answered)} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-7}\cmidrule(lr){8-11}\cmidrule(lr){12-13}
+Dataset & suff. & matched & uptake & corr. & suff. & uptake & none & full & $\parallel v$ & $\perp v$ & $\vdm$ & random \\
+\midrule
+HotpotQA & 0.979 & 0.961 & 0.729 & 0.846 & 0.952 & 0.649 & 0.41 & 0.92 & 0.41 & 0.92 & 0.17 & 0.92 \\
+RAGBench & 0.898 & 0.944 & 0.685 & 0.742 & 0.706 & 0.550 & 0.15 & 0.72 & 0.15 & 0.72 & 0.10 & 0.73 \\
+RAGBench (held-out sub-datasets) & 0.717 & 0.872 & 0.596 & 0.719 & 0.706 & 0.550 & -- & -- & -- & -- & -- & -- \\
+Synthetic & 0.965 & 0.948 & 0.930 & 0.925 & 0.739 & 0.722 & 0.03 & 0.89 & 0.03 & 0.89 & 0.00 & 0.99 \\
+Synthetic (held-out relation chains) & 0.945 & 0.925 & 0.883 & 0.897 & 0.739 & 0.722 & -- & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}

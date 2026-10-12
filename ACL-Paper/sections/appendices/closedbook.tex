@@ -1,0 +1,5 @@
+\section{Closed-book transfer}
+\label{app:closedbook}
+\paragraph{Setup.} This experiment asks whether the directions learned on evidence trajectories also say something when no evidence is given at all. We re-run the closed-book prompt on Qwen's screened pool of 4{,}000 questions with activation capture and score every stored direction on the closed-book anchor activations, for two targets: closed-book correctness and closed-book abstention (INSUFFICIENT). A probe trained directly on closed-book activations (question-disjoint split) gives the ceiling.
+
+\paragraph{Results.} Closed-book answers are correct $1.5\%$ of the time and abstain $91.7\%$ of the time. For correctness, the state-correctness direction reaches $0.810$ ($0.838$ at its best layer), correction $0.799$ and state-sufficiency $0.722$ ($0.808$), against an own-probe ceiling of $0.874$. The abstention-flag direction predicts abstention at $0.977$, against a ceiling of $0.973$.

@@ -1,0 +1,9 @@
+\section{Robustness across data splits}
+\label{app:splits}
+Every probe is trained on 70\% of questions and tested on the remaining 30\% under four groupings that are never shared between train and test: question id; gold document, where questions that share any supporting page are grouped together (transitively) and each group goes entirely to one side; answer entity; and the tuple of relation types along the question's hops. The document split is the default in the main text. \Cref{tab:splits} gives the best-layer test AUROC under all four for the three two-hop runs, the 3--4-hop run and \twowiki{}. Sufficiency varies by at most $0.015$ across splits. Uptake is lower on the document and answer splits than on the question split, by $0.06$--$0.13$ on the two-hop runs and by $0.18$ on 3--4-hop questions (\cref{app:multihop}).
+\begin{table*}[t]
+\centering\small
+\input{tables/splits}
+\caption{Best-layer AUROC under the four disjoint splits, for the three 2-hop runs, the 3--4-hop run and \twowiki{}.}
+\label{tab:splits}
+\end{table*}

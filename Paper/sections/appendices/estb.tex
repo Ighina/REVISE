@@ -24,7 +24,7 @@ The benchmark therefore separates three questions: whether the state is \emph{pr
 \subsection{Evidence quality states}
 \label{app:estb-quality}
 
-\Cref{tab:estb-states} lists the seven quality states of the review's evidence-quality axis and the increment kinds (\cref{app:conditions}) that realise them. All states except C0 are increments, i.e.\ transitions \emph{into} the state from the preceding context.
+\Cref{tab:estb-states} lists the seven quality states of the evidence-quality axis and the increment kinds (\cref{app:conditions}) that realise them. All states except C0 are increments, i.e.\ transitions \emph{into} the state from the preceding context.
 
 \begin{table}[h]
 \centering\scriptsize
@@ -71,12 +71,12 @@ Closed-book status & correct; incorrect & HotpotQA and RAGBench (\texttt{select:
 \label{tab:estb-axes}
 \end{table}
 
-All ESTB runs reported here use Qwen2.5-7B-Instruct and the pipeline of the main text without modification. The four retrieval runs and the variants run draw 1{,}200 two-hop \musique{} training questions that the model answers incorrectly closed-book, with no random hop permutations.
+All ESTB runs reported here use Qwen2.5-7B-Instruct \cite{qwen2025qwen25} and the pipeline of the main text without modification. The four retrieval runs and the variants run draw 1{,}200 two-hop \musique{} training questions that the model answers incorrectly closed-book, with no random hop permutations.
 
 \subsection{Retrieval-source axis}
 \label{app:estb-retrieval}
 
-\paragraph{Corpus and retrievers.} Evidence comes from wiki-18, the December 2018 Wikipedia dump released with FlashRAG: 21M passages of 100 words with their article titles. \emph{BM25} uses \texttt{bm25s} over title and text, with English stop-words and Snowball stemming. \emph{E5} uses the published FAISS flat inner-product index of \texttt{e5-base-v2} passage embeddings; queries are encoded with the \texttt{query:} prefix and mean pooling, then $\ell_2$-normalised.
+\paragraph{Corpus and retrievers.} Evidence comes from wiki-18, the December 2018 Wikipedia dump of \citet{karpukhin2020dense} as distributed with FlashRAG \cite{jin2025flashrag}: 21M passages of 100 words with their article titles. \emph{BM25} \cite{robertson2009bm25}, a lexical retriever, uses the \texttt{bm25s} implementation \cite{lu2024bm25s} over title and text, with English stop-words and Snowball stemming. \emph{E5} \cite{wang2022e5}, a dense retriever, uses the published FAISS flat inner-product index of \texttt{e5-base-v2} passage embeddings; queries are encoded with the \texttt{query:} prefix and mean pooling, then $\ell_2$-normalised.
 
 \paragraph{Queries.} A single question-level query rarely retrieves both hops of a bridge question. Each question therefore issues the question itself plus one query per hop, taken from \musique{}'s decomposition with the earlier hops' sub-answers substituted for the \texttt{\#k} placeholders (three queries per two-hop question). This imitates an iterative or decomposing RAG system that gets the earlier hops right. The per-query hit lists are merged round-robin by rank, de-duplicated, and cut at $k=30$ passages per question.
 

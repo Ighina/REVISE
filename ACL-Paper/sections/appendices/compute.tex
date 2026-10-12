@@ -1,0 +1,3 @@
+\section{Compute and reproducibility}
+\label{app:compute}
+Collection for one 2-hop model ($\approx35$k conditions) takes about 22 hours on 64 CPU cores (bf16, $\approx300$ prompt tokens/s) or about one hour on an H200 shared with another job; the 3--4-hop run took 1.3 GPU-hours; all causal experiments and text baselines together used about 7 GPU-hours. Probing runs on CPU in one to two hours per model. Every stage is deterministic given the seed (question sampling, insertion positions, false-answer choice, splits) and resumable. Code, configurations and the trajectory construction are released with the paper.

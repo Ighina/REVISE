@@ -1,0 +1,5 @@
+\section{Evidence-augmented regime}
+\label{app:augmented}
+\paragraph{Setup.} The evidence-augmented regime repeats every stateless forward pass of the Qwen two-hop run with one change to the instruction: ``use the supplied evidence together with your own knowledge'' instead of ``use only the supplied evidence''. Conditions, increments, splits and probes are otherwise identical.
+
+\paragraph{Results.} The Qwen probes give sufficiency $0.945$, matched $0.913$, uptake $0.721$ and correction $0.786$ (document split), within $0.05$ of the evidence-only regime. Behaviour shifts as expected for a more permissive instruction: on minimally sufficient contexts the model answers more ($0.51$ correct, $0.23$ abstain) and it follows false evidence more often.

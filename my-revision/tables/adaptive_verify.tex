@@ -1,0 +1,22 @@
+\begin{tabular}{lcccccc}
+\toprule
+Signal at the stopping round & \musique{} Qwen & \musique{} Llama & \musique{} Mistral & HotpotQA Qwen & \twowiki{} Qwen & Synthetic Qwen \\
+\midrule
+top-token probability & 0.621 & 0.615 & 0.630 & 0.654 & 0.705 & 0.876 \\
+$-$next-token entropy & 0.623 & \textbf{0.630} & 0.637 & \textbf{0.657} & 0.705 & \textbf{0.877} \\
+state: sufficiency & 0.465 & 0.463 & 0.521 & 0.526 & 0.621 & 0.738 \\
+state: correctness & 0.560 & 0.568 & 0.618 & 0.626 & 0.763 & 0.388 \\
+state: abstention flag & 0.432 & 0.473 & 0.412 & 0.395 & 0.444 & 0.252 \\
+update: sufficiency & 0.482 & 0.543 & 0.495 & 0.554 & 0.594 & 0.585 \\
+update: sufficiency ($\vdm$) & 0.566 & 0.569 & 0.601 & 0.567 & 0.806 & 0.534 \\
+update: uptake & \textbf{0.672} & 0.613 & 0.647 & 0.617 & \textbf{0.847} & 0.764 \\
+update: correction & 0.594 & 0.576 & \textbf{0.666} & 0.639 & 0.753 & 0.400 \\
+update: stability & 0.549 & 0.566 & 0.559 & 0.562 & 0.775 & 0.497 \\
+update: revision & 0.512 & 0.517 & 0.490 & 0.524 & 0.601 & 0.531 \\
+\midrule
+accuracy of all answered stops & 0.665 & 0.666 & 0.534 & 0.810 & 0.761 & 0.990 \\
+accuracy, top half by top-token prob. & 0.751 & 0.733 & 0.618 & 0.863 & 0.870 & 0.998 \\
+accuracy, top half by uptake & 0.789 & 0.757 & 0.651 & 0.867 & 0.957 & 0.995 \\
+answered stops & 427 & 404 & 373 & 542 & 230 & 819 \\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,49 @@
+\section{Causal results: readout versus mechanism}
+\label{sec:causal}
+
+A direction from which a state can be read is not necessarily a direction the model uses. This section tests whether the probe directions of \cref{sec:readout} play a causal role in the model's behaviour. All tests use pairs of prompts from 150 held-out questions: an \emph{insufficient} prompt, whose context lacks one gold paragraph, and the corresponding \emph{sufficient} prompt, in which that paragraph has been added. We measure how often the model answers rather than saying INSUFFICIENT, and how often its answer is correct. We use three interventions on the residual stream \cite{ActivationSteering,meng2022locating}:
+\begin{itemize}
+  \item \textbf{Steering} adds a multiple of a direction to the residual stream at the anchor and at every generated position. If the direction carried sufficiency, adding it should make the model answer, and subtracting it should make it abstain.
+  \item \textbf{Patching} runs the insufficient prompt but replaces its anchor residual with the one from the sufficient prompt, at every layer from the best sufficiency layer onward. Patching only the component of that replacement along a given direction, or only the component orthogonal to it, shows where the causal content lies.
+  \item \textbf{Projection-out} runs the sufficient prompt but sets the component of the residual along a direction to its average value on insufficient prompts, from the best layer onward. If the model relies on that direction, it should start abstaining.
+\end{itemize}
+We test two kinds of direction: the logistic probe direction $\vlr$, and the difference-of-means direction $\vdm$, the normalised difference between the average residual of sufficient and of insufficient states \cite{marks2023geometry}.
+
+\begin{table*}[t]
+\centering\scriptsize
+\setlength{\tabcolsep}{3pt}
+\input{tables/causal}
+\caption{Causal tests on 150 held-out questions, intervening at every layer from the best sufficiency layer onward. Left: the insufficient prompt with its anchor residual patched from the sufficient prompt (correct / answered rate). ``none'': no patch; ``full'': the whole residual; $\parallel v$ and $\perp v$: only the component along, or orthogonal to, the probe direction; ``rand-256'': a random 256-dimensional subspace; PC1, PC256: the top 1 or 256 principal components of training updates; ``unemb.'': the gold answer's unembedding direction. Right: the sufficient prompt with the component along a direction set to its insufficient-state value (answered rate). $\vdm$: difference-of-means direction; $\vlr$: logistic-probe direction.}
+\label{tab:causal}
+\end{table*}
+
+\paragraph{Probe directions are inert.}
+Steering along the logistic sufficiency or uptake direction at the best layer changes no aggregate rate at any strength from $0.7$ to $22$ units of $\ell_2$ norm, which is up to 35\% of the typical norm of the residual stream (\cref{app:steer-lr}). A random direction of the same norm is equally inert, so the null result is not a matter of dose. Patching only the component of the sufficient-minus-insufficient update that lies along the probe direction leaves the insufficient prompt's behaviour unchanged in all three models (\cref{tab:causal}, ``$\parallel v$''). Projecting the logistic direction out of sufficient prompts changes nothing either ($\vlr$ column). The same holds for the uptake direction.
+
+\paragraph{The anchor residual is causally sufficient, but its effect lies outside the probe direction.}
+Replacing the insufficient prompt's anchor residual with the sufficient prompt's takes Qwen from $0.04/0.13$ (correct/answered) to $0.26/0.71$ and Llama from $0.02/0.11$ to $0.24/0.74$. This is roughly half the correctness the model reaches when the missing paragraph is actually present. Removing the probe component from that patch (``$\perp v$'') leaves the effect intact ($0.25/0.71$, $0.24/0.73$). The single anchor position therefore carries enough to make the model answer, and often answer correctly, but none of that content lies along the direction the probe reads. Mistral shows the same dissociation with a weaker effect of the full patch ($0.09/0.60$), as does the 3--4-hop run ($0.25/0.62$).
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.84\linewidth]{subspace_rank}
+\caption{How many dimensions the causal content needs. The insufficient prompt is patched with the sufficient-minus-insufficient update projected on the top-$k$ principal components of training updates, on a random 256-dimensional subspace, on the gold answer's unembedding direction (``unemb''), or on everything but that direction.}
+\label{fig:subspace}
+\end{figure*}
+
+\paragraph{The causal content is high-dimensional and model-specific.}
+To measure how many dimensions the causal content occupies, \cref{fig:subspace} patches only the part of the update that lies in the top-$k$ principal components of the decisive updates seen in training. The answering rate rises gradually with $k$ (Qwen: $0.29$ at $k{=}1$, $0.49$ at $k{=}16$, $0.59$ at $k{=}256$, $0.71$ for the full update), while a random 256-dimensional subspace does nothing. Correctness needs even more of the update. The first component carries much of the switch between answering and abstaining, which is consistent with the projection-out result below. What carries correctness differs by model. One natural candidate is the gold answer's unembedding direction, the direction in the residual stream that most directly promotes the answer's first token. On Llama this direction alone restores $0.19/0.62$, most of the full effect. On Qwen and Mistral it restores little ($0.09/0.19$, $0.07/0.19$), although removing it from the full patch halves Qwen's correctness ($0.26\to0.13$). Mistral's and the 3--4-hop run's effects are captured by the top principal components instead ($0.56$ and $0.51$ answered at $k{=}256$).
+
+\paragraph{The mean-difference direction is a causal abstention gate.}
+The one direction with a causal effect is $\vdm$, which the logistic probe does not align with. Setting its component to the insufficient-state value makes all three models abstain on essentially every sufficient prompt (answered $0.01$, $0.00$, $0.01$, against $0.72$, $0.73$, $0.63$ for a random direction treated identically), and equally on prompts with falsified evidence. Steering along $\vdm$ at low strength over four layers gives a graded, monotone response in both directions, while the random control stays flat (\cref{fig:steer}; full numbers in \cref{tab:steer}, \cref{app:steer-dm}). Here the strength $\alpha$ is measured in units of the gap between the sufficient and insufficient means. At $\alpha=-1$ Qwen answers $34\%$ of sufficient prompts (from $71\%$), with unchanged precision among the answers it still gives.
+
+The positive direction, however, is indiscriminate. At $\alpha=+1$ the models answer more often on distractor-only prompts (Qwen $0.03\to0.12$, Llama $0.03\to0.29$, Mistral $0.03\to0.28$), on insufficient prompts ($0.13\to0.26$, $0.11\to0.51$, $0.17\to0.47$) and on answer-string controls, and Llama follows falsified evidence twice as often ($0.19\to0.39$). Meanwhile, correct answers on sufficient prompts gain only $3$ points on Qwen and $18$ on Llama. Before running these experiments we fixed a criterion: a direction that makes the model accept any passage is a context-compliance or abstention direction, not one that makes the model integrate evidence better. By that criterion, $\vdm$ is an abstention gate. Applied at all positions and all layers with $|\alpha|\ge2$, the same recipe destroys the output for the probe and random directions alike (\cref{app:steer-dm}).
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.84\linewidth]{steer_dose_response}
+\caption{Dose-response of difference-of-means steering (four layers from the best sufficiency layer, from the anchor onward; $\alpha$ in units of the sufficient-minus-insufficient gap). Negative $\alpha$ induces abstention everywhere; positive $\alpha$ induces answering everywhere, including on distractors and false evidence.}
+\label{fig:steer}
+\end{figure*}
+
+\paragraph{Use for adaptive retrieval.}
+Because the readouts are available before generation, they can decide when a retrieval system should stop fetching evidence and answer. Used as such a stopping rule, the sufficiency readouts match the behavioural rule ``stop as soon as the model does not say INSUFFICIENT'' on \musique{} and beat it on HotpotQA ($0.73$ against $0.65$ accuracy), without generating at every round. Uptake, correction and stability are poor stopping rules. Once retrieval has stopped, however, the uptake (or correction) direction is the best learned signal for deciding whether to trust the answer given there (\cref{app:adaptive}).

@@ -1,0 +1,5 @@
+\section{Steering along the logistic directions}
+\label{app:steer-lr}
+\paragraph{Setup.} We add $\alpha\,u\,v$ along the logistic state-sufficiency direction at its best layer, from the anchor onward, with $u$ the sufficient-minus-insufficient gap along $v$ (\cref{app:probing}). Doses are $\alpha\in\{\pm0.5,\pm1,\pm2\}$ gap units ($\le1.4$ $\ell_2$) and $\alpha\in\{\pm8,\pm16,32\}$ ($5$--$22$ $\ell_2$, on a mean residual norm of $61$). We also steer along the uptake direction at layer 26 ($\le16$ $\ell_2$), and run an all-positions variant. A random unit direction with the same $\ell_2$ magnitude is the control. Outcomes are measured on 150 held-out questions in each of five sets: sufficient, insufficient, false-evidence, answer-string and distractor-only contexts.
+
+\paragraph{Results.} Every rate stays within $\pm0.02$ of baseline on all five sets, for the probe directions and the random control alike. At $32$ units all rates degrade by $0.02$--$0.05$, again equally for probe and random directions. The all-positions variant at $\le11$ $\ell_2$ is equally flat.

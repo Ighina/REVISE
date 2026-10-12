@@ -1,0 +1,11 @@
+\section{Evidence conditions and increments}
+\label{app:conditions}
+For a question with $n$ gold hop paragraphs $g_0,\dots,g_{n-1}$ (canonical order from the dataset's decomposition) and its distractor pool, the conditions are:
+\begin{itemize}
+  \item $C_0$: no evidence; $C_D$: $n$ distractors, each length-matched (word count) to one gold paragraph.
+  \item Chains: for each hop order $o\in\{\text{canonical},\text{reverse}\}\cup\{\text{random permutations, }n\ge3\}$, the prefixes $C_{o_{1}},C_{o_{1}o_{2}},\dots$; each new paragraph is inserted at a uniformly random position in the previous presentation order. The last prefix is minimally sufficient. Identical conditions arising from different orders are de-duplicated.
+  \item Leave-one-out ($n\ge3$): all gold paragraphs but one, shuffled, and its completion.
+  \item From every penultimate state $S$ (used by a chain or leave-one-out context): $S{+}D$ (distractor length-matched to the decisive paragraph), $S{+}R$ (verbatim duplicate of a gold paragraph already in $S$), $S{+}F$ (decisive paragraph with its sub-answer, and title if applicable, replaced by another question's sub-answer of the same relation type; questions whose sub-answer does not appear in the paragraph have no false condition), $S{+}A$ (a distractor with ``(Not to be confused with \{answer\}.)'' appended).
+  \item Post-sufficiency: the canonical minimal sufficient context plus a distractor, plus a duplicate gold, plus a conflicting falsified final hop; and the full context of all 20 paragraphs, shuffled.
+\end{itemize}
+Increment kinds and labels: \texttt{decisive}/\texttt{loo\_decisive} ($y^{\mathrm{suff}}=1$), \texttt{gold\_nondecisive}, \texttt{distractor}, \texttt{redundant}, \texttt{false}, \texttt{answer\_ctrl}, \texttt{distractor\_from\_none}, \texttt{post\_distractor}, \texttt{post\_redundant}, \texttt{post\_false}, \texttt{full\_context}. The \emph{sufficiency} task uses all kinds; the \emph{matched} variant uses decisive increments and the four controls from the same penultimate state only. For 2-hop questions this gives 17 conditions and 17 increments per question; the conversational protocol re-runs the 10 chain-related increment kinds with the model's own stateless answer as $A_k$ (30{,}000 increments for Qwen).

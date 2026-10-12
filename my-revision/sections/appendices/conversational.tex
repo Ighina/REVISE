@@ -1,0 +1,5 @@
+\section{Conversational protocol}
+\label{app:conversational}
+\paragraph{Setup.} In the conversational revision protocol the model sees, in a two-turn chat, the question with its earlier evidence and its own stateless answer $A_k$ from that context, and then only the new paragraph, with the instruction to change its answer only if the total evidence warrants it. The paired update is $h_{\text{conv}}(C_k\to C_{k+1})-h(C_k)$. The 10 chain-related increment kinds are re-run in this format (30{,}000 increments for Qwen); labels are defined as in the stateless protocol.
+
+\paragraph{Results.} Probes trained within the conversational regime reach sufficiency $0.951$, uptake $0.818$, correction $0.922$, stability $0.959$ and revision $0.969$ (document split). Stability and revision are much higher than in the stateless regime because the model's previous answer is in the prompt. The stateless directions transfer at $0.79$ (sufficiency), $0.78$ (uptake), $0.92$ (correction) and $0.82$ (stability) (\cref{tab:transfer}).

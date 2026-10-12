@@ -1,0 +1,12 @@
+\begin{tabular}{lccccccccccc}
+\toprule
+& \multicolumn{8}{c}{Patching the insufficient prompt (correct/answered)} & \multicolumn{3}{c}{Projection-out on sufficient (answered)} \\
+\cmidrule(lr){2-9}\cmidrule(lr){10-12}
+Model & none & full & $\parallel v$ & $\perp v$ & rand-256 & PC1 & PC256 & unemb. & $v_{\mathrm{dm}}$ & random & $v_{\mathrm{lr}}$ \\
+\midrule
+Qwen2.5-7B & 0.04/0.13 & 0.26/0.71 & 0.04/0.13 & 0.25/0.71 & 0.04/0.13 & 0.09/0.29 & 0.18/0.59 & 0.09/0.19 & 0.01 & 0.72 & 0.72 \\
+Llama-3.1-8B & 0.02/0.11 & 0.24/0.74 & 0.02/0.12 & 0.24/0.73 & 0.02/0.12 & 0.02/0.19 & 0.09/0.41 & 0.19/0.62 & 0.00 & 0.73 & 0.75 \\
+Mistral-7B & 0.07/0.17 & 0.09/0.60 & 0.07/0.17 & 0.09/0.60 & 0.07/0.17 & 0.08/0.61 & 0.08/0.56 & 0.07/0.19 & 0.01 & 0.63 & 0.63 \\
+Qwen 3--4 hop & 0.05/0.20 & 0.25/0.62 & 0.06/0.19 & 0.25/0.62 & 0.06/0.20 & 0.07/0.23 & 0.20/0.51 & 0.07/0.21 & 0.03 & 0.63 & 0.63 \\
+\bottomrule
+\end{tabular}
