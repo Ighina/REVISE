@@ -1,5 +1,4 @@
 """Plant a direction in synthetic Δh and check the probe machinery recovers it."""
-import json
 
 import numpy as np
 import yaml

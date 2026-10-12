@@ -9,7 +9,7 @@ Outputs under ``features/<regime>/``:
 from __future__ import annotations
 
 import logging
-from typing import Dict, List, Optional
+from typing import List
 
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -74,7 +74,7 @@ def build_features(run: Run, regime: str, cfg: dict) -> None:
         if fk not in beh_from or fk not in store_from or tk not in beh_to or tk not in store_to:
             continue
         q = qs[inc.qid]
-        c_from, c_to = conds[fk], conds[f"{inc.qid}::{inc.to_cid}"]
+        c_to = conds[f"{inc.qid}::{inc.to_cid}"]
         b_from, b_to = beh_from[fk], beh_to[tk]
         added = [p for p in c_to.paragraphs if p.pid in set(inc.added_pids)]
         added_text = " ".join(p.title + " " + p.text for p in added)

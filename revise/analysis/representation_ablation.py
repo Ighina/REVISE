@@ -20,7 +20,7 @@ from __future__ import annotations
 import json
 import logging
 import sys
-from typing import Dict, List
+from typing import Dict
 
 import numpy as np
 from joblib import Parallel, delayed

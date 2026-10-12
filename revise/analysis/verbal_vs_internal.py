@@ -60,7 +60,7 @@ def run_compare(cfg: dict, regime: str = "evidence_only", mode: str = "document"
     names = np.array([sm[i]["name"] for i in idx])
     out = {"run": cfg["run_name"], "layer": layer, "n_test": int(te.sum())}
     # verbalised judgement
-    v_tpr_tr, v_fpr_tr = ans[tr & (y == 1)].mean(), ans[tr & (y == 0)].mean()
+    v_fpr_tr = ans[tr & (y == 0)].mean()          # threshold the probe at the verbalised FPR
     out["verbal"] = {"tpr": float(ans[te & (y == 1)].mean()), "fpr": float(ans[te & (y == 0)].mean())}
     out["verbal"]["auc"] = float(roc_auc_score(y[te], ans[te].astype(float)))
     out["probe_auc"] = float(roc_auc_score(y[te], s[te]))

@@ -17,3 +17,7 @@ sentencepiece
 tiktoken
 joblib
 pytest
+# Only needed for the retrieved-evidence (ESTB) runs: pip install -e ".[retrieval]"
+# bm25s
+# PyStemmer
+# faiss-cpu

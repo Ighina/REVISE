@@ -7,11 +7,12 @@ from __future__ import annotations
 
 import json
 import sys
-from typing import Dict, List
+from typing import Dict
 
 import numpy as np
 from sklearn.metrics import roc_auc_score
 
+from revise import config
 from revise.analysis.features import load_features
 from revise.analysis.probes import DELTA_TASKS, STATE_TASKS, _select
 from revise.analysis.splits import make_split
@@ -57,4 +58,5 @@ if __name__ == "__main__":
                 out[name][f"{task}/{mode}"] = r
                 print(f"{name:24s} {task:20s} {mode:9s} L{r['layer']:<2d} AUROC {r['auc']:.3f} [{r['ci95'][0]:.3f}, {r['ci95'][1]:.3f}] n={r['n_test']} q={r['n_test_questions']}", flush=True)
         run.save_json("probes/bootstrap_ci.json", out[name])
-    json.dump(out, open("/scratch/users/iacopog/revise/artifacts/bootstrap_ci_all.json", "w"), indent=2)
+    with open(config.artifact("bootstrap_ci_all.json"), "w") as f:
+        json.dump(out, f, indent=2)

@@ -14,7 +14,7 @@ import json
 import logging
 import os
 import random
-from typing import Dict, List
+from typing import Dict
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression

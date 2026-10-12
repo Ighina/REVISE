@@ -10,7 +10,6 @@ baselines.  No new forward passes are needed.
 """
 from __future__ import annotations
 
-import json
 import logging
 from typing import Dict, List
 

@@ -9,13 +9,13 @@ from __future__ import annotations
 import logging
 import random
 import time
-from typing import Dict, List, Optional, Sequence
+from typing import List, Optional
 
 import numpy as np
 from tqdm import tqdm
 
 from revise.data.loaders import load_questions
-from revise.data.schema import Condition, Increment, Question, append_jsonl, read_jsonl, write_jsonl
+from revise.data.schema import Question, append_jsonl, read_jsonl, write_jsonl
 from revise.data.trajectories import build_all
 from revise.eval import answer_state, clean_generation, exact_match, is_insufficient, max_f1, normalize_answer
 from revise.experiment import Run

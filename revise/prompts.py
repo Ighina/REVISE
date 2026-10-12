@@ -7,7 +7,7 @@ across contexts of different length.
 """
 from __future__ import annotations
 
-from typing import List, Optional, Sequence
+from typing import List, Sequence
 
 from revise.data.schema import Paragraph
 

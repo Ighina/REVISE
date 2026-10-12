@@ -1,93 +1,209 @@
-# REVISE
+# The Evidence Within
 
-Code for the research plan in [`RESEARCH_PLAN.md`](RESEARCH_PLAN.md):
+Code for *The Evidence Within: Evidence Sufficiency and Uptake in the Residual
+Stream of Retrieval-Augmented LLMs*.
 
-> As evidence becomes sufficient to answer a question, does an LLM undergo a
-> shared internal state transition that predicts successful knowledge
-> accommodation *before* the answer is generated?
+The question the paper asks is whether a retrieval-augmented model's internal
+state, read **before** it generates anything, already says that the evidence in
+its context is sufficient and that it is about to use it — and whether that
+internal read-out beats the baselines a practitioner would reach for first: a
+text classifier over the retrieved passage, the model's own verbalised
+judgement, and its output confidence.
 
 The pipeline builds semantically-defined **evidence trajectories** for
-multi-hop questions (MuSiQue / 2WikiMultiHopQA), runs a stateless forward pass
-per evidence stage, records the residual stream at the answer-start anchor for
-every layer, and then trains linear probes on **paired activation updates**
-`Δh = h(C_k) − h(C_{k−1})` against matched textual controls, followed by
-causal validation (steering, activation patching) and an adaptive-retrieval
-simulation.
-
-Everything runs on **CPU**: the backend is Hugging Face Transformers in
-bfloat16 with forward hooks (llama.cpp would be faster but offers no clean
-per-layer read/write access from Python, which steering and patching need).
-On this machine (2×64-core AMD EPYC 9555 with AVX-512 bf16, 755 GB RAM) a 7B
-model is workable; see *Runtime* below.
-
-## Layout
+multi-hop questions, runs one forward pass per evidence stage, records the
+residual stream at the answer-start anchor for every layer, trains linear
+probes on **paired activation updates** `Δh = h(C_k) − h(C_{k−1})` against
+matched textual controls, and then validates the directions causally
+(activation patching, projection-out, steering) and tests how far they
+transfer.
 
 ```
-revise/
-  config.py            scratch/cache paths (everything under /scratch/users/iacopog/revise)
-  data/loaders.py      MuSiQue + 2Wiki -> Question (ordered gold hops, distractors, decomposition)
-  data/trajectories.py evidence conditions + labelled increments (decisive / distractor / redundant / false / answer-string)
-  prompts.py           evidence-only, evidence-augmented, closed-book, conversational-revision templates
-  model/backend.py     CPU HF backend: anchor activations (all layers), gold log-prob, greedy decoding, steer/patch hooks
-  store.py             sharded float16 activation store
-  run/collect.py       closed-book screening, stateless collection, conversational ablation (all resumable)
-  analysis/features.py Δh datasets + transition labels + nuisance covariates
-  analysis/splits.py   question / document / answer-entity / relation-disjoint splits
-  analysis/probes.py   per-layer probes, nuisance/residual analyses, cross-task + cross-regime/dataset transfer
-  run/steer.py         additive steering with random-direction control and false/answer-string/distractor sets
-  run/patch.py         anchor patching: full / parallel / orthogonal / random / distractor / other-question
-  run/adaptive.py      adaptive-retrieval simulation from the pre-generation state probe
-  analysis/report.py   markdown summary + AUROC-by-layer plots
-  cli.py               `python -m revise.cli <stage> -c configs/<cfg>.yaml`
-configs/               smoke (0.5B), musique_2hop_qwen7b, musique_full_qwen7b, twowiki_qwen7b, musique_2hop_llama8b
-scripts/               setup_env.sh, link_shared_cache.sh, run_smoke.sh, run_main.sh
-tests/                 unit tests (trajectory invariants, splits, eval, planted-direction probe, tiny backend)
+quick start
+  scripts/setup_env.sh          # environment
+  scripts/run_smoke.sh          # 10-minute end-to-end check on Qwen2.5-0.5B
+  scripts/run_in_domain_results.sh   # Table 2, and the runs everything else builds on
+  scripts/make_paper_artifacts.sh    # rebuild the tables and figures
 ```
+
+## Contents
+
+- [Setup](#setup)
+- [Replicating the paper](#replicating-the-paper)
+- [The pipeline](#the-pipeline)
+- [Evidence conditions and increments](#evidence-conditions-and-increments)
+- [Layout](#layout)
+- [Runtime and hardware](#runtime-and-hardware)
+- [Notes and assumptions](#notes-and-assumptions)
 
 ## Setup
 
 ```bash
-scripts/setup_env.sh                       # conda env "revise" (python 3.11, CPU torch)
-conda activate revise
-export REVISE_SCRATCH=/scratch/users/iacopog/revise   # default; weights, data, runs all live here
-scripts/link_shared_cache.sh               # optional: symlink already-downloaded 7B/8B weights instead of re-downloading
-python -m pytest -q                        # 11 tests, ~10 s
+scripts/setup_env.sh                 # venv in ./.venv with CPU-only PyTorch
+CUDA=1 scripts/setup_env.sh          # ... or the CUDA wheel
+CONDA=1 scripts/setup_env.sh         # ... or a conda env named "revise"
+source .venv/bin/activate
+
+export REVISE_SCRATCH=/path/with/space   # optional; default ./scratch
+python -m pytest -q                      # unit tests, ~3 s
+python -m pytest -q -m slow              # ... plus the real-backend test (downloads a 0.5B model)
+scripts/run_smoke.sh                     # whole pipeline on Qwen2.5-0.5B, ~10 min
 ```
 
-`revise.config` forces `HF_HOME` to `$REVISE_SCRATCH/hf_cache` (set
-`REVISE_KEEP_HF_ENV=1` to keep a pre-existing `HF_HOME`).
+Everything heavy — model weights, datasets, activations, run outputs — is
+written under `REVISE_SCRATCH`, never into the repository. The activation store
+dominates: all layers at one token position in float16 is about **7 GB per
+regime** for a 2,000-question MuSiQue run, so roughly 20 GB for the Qwen run
+(two regimes plus the conversational protocol) and 7–10 GB for each
+single-regime run, on top of ~15 GB of weights per model.
+`revise.config` also points every Hugging Face cache at
+`$REVISE_SCRATCH/hf_cache`; set `REVISE_KEEP_HF_ENV=1` to keep an existing
+`HF_HOME` instead.
 
-## Running
+Llama-3.1-8B is a gated model: accept its licence on the Hub and log in with
+`huggingface-cli login` before running the Llama configs.
+
+The retrieved-evidence (ESTB) runs need three extra packages,
+`pip install -e ".[retrieval]"`; nothing else does.
+
+### Environment variables
+
+| variable | effect |
+|---|---|
+| `REVISE_SCRATCH` | where weights, data, activations and runs live (default `./scratch`) |
+| `REVISE_DEVICE` | `cpu` or `cuda`; default is CUDA when a GPU is visible |
+| `REVISE_BATCH_SIZE` | overrides `model.batch_size`; 32 is a good GPU value, batching barely helps on CPU |
+| `REVISE_NUM_THREADS` | CPU threads for the forward passes (the configs assume a 64-core host) |
+| `REVISE_TOKEN_BUDGET` | maximum prompt tokens per batch, default 48000; lower it if a GPU runs out of memory |
+| `PYTHON`, `N_JOBS`, `KEEP_GOING`, `DRY_RUN` | read by the scripts below: interpreter, parallel probe fits, carry on after a failure, print commands without running them |
+
+## Replicating the paper
+
+One script per result. Each one documents the table or figure it produces,
+which scripts must have run first, and the stages it runs; each is **resumable**
+— every stage skips the work already in its run directory, so re-run a script
+after an interruption and it continues. `DRY_RUN=1` prints the plan instead of
+running it.
+
+| script | produces | needs first |
+|---|---|---|
+| `run_smoke.sh` | nothing; validates the installation on a 0.5B model | — |
+| `run_in_domain_results.sh` | **Table 2** (probe AUROC with nuisance and gain columns, bootstrap intervals) for the three models on MuSiQue 2-hop; also the AUROC-by-layer and cross-task transfer figures, the split-generalisation, behaviour and closed-book appendix tables | — |
+| `run_baselines.sh` | **Table 3** (TF-IDF and DeBERTa text classifiers, verbalised judgement, output confidence) and the uptake-given-an-answer appendix table | in-domain |
+| `run_causal_results.sh` | **Table 4** (patching, projection-out) and **Figure 1** (steering dose-response), plus the steering appendices | in-domain, transfer |
+| `run_external_results.sh` | **Table 5** (HotpotQA, RAGBench, synthetic) and the per-group appendix table | in-domain |
+| `run_transfer_results.sh` | the transfer appendix: 2WikiMultiHopQA and MuSiQue 3–4 hop | in-domain |
+| `run_readout_analyses.sh` | the read-out appendix: state vs update representations, output-controlled probes, verbalised vs internal sufficiency | in-domain |
+| `run_adaptive_results.sh` | the adaptive-retrieval appendix (every direction as a stopping rule and as a verifier) | the runs it is given |
+| `run_estb.sh` | the ESTB appendix: retrieved (BM25 / E5) and LLM-rewritten evidence | in-domain |
+| `make_paper_artifacts.sh` | all the LaTeX tables and PDF figures, plus `numbers.json` | whichever runs exist |
+| `run_all.sh` | all of the above in dependency order (weeks of GPU time) | — |
+
+So the shortest path to the main result is
 
 ```bash
-scripts/run_smoke.sh                                   # whole pipeline on Qwen2.5-0.5B, ~10 min
-scripts/run_main.sh configs/musique_2hop_qwen7b.yaml   # Phase 1 (resumable; re-run to continue)
+scripts/run_in_domain_results.sh     # the long one: ~90k forward passes per model
+scripts/run_baselines.sh
+scripts/make_paper_artifacts.sh      # -> paper_artifacts/tables/probes_models.tex
 ```
 
-Stages (each is idempotent and resumable):
+`make_paper_artifacts.sh` writes to `$REVISE_PAPER_DIR` (default
+`./paper_artifacts`): one `.tex` file per table, the figures as PDF, and
+`tables/numbers.json`, a single dictionary holding every number quoted in the
+paper. A builder whose runs are missing warns and is skipped, so running it on
+a partial replication shows how far things have got.
 
-| stage | what it does | output (under `runs/<run_name>/`) |
+Scripts take configs as arguments, so a single model or dataset is easy to
+isolate:
+
+```bash
+scripts/run_in_domain_results.sh configs/musique_2hop_qwen7b.yaml
+DRY_RUN=1 scripts/run_causal_results.sh          # what would run
+KEEP_GOING=1 scripts/run_external_results.sh     # don't stop at the first failure
+```
+
+### Retrieval caches
+
+`run_estb.sh` retrieves evidence from the wiki-18 corpus inside its `screen`
+stage, so the caches have to exist first (both are one-off, CPU-only, and
+shared by every later run):
+
+```bash
+python scripts/build_retrieval_index.py   # parse the corpus, build the BM25 index (hours)
+python scripts/check_e5_retrieval.py      # fetch and concatenate the E5 FAISS index; reports gold recall
+```
+
+## The pipeline
+
+Every experiment is a `(config, stage)` pair:
+
+```bash
+python -m revise.cli <stage> -c configs/<config>.yaml
+```
+
+Stages are idempotent and resumable; `all` runs the usual sequence.
+
+| stage | what it does | output under `$REVISE_SCRATCH/runs/<run_name>/` |
 |---|---|---|
-| `screen` | closed-book pass over the question pool; keep questions the model gets wrong; build conditions + increments | `screen.jsonl`, `questions.jsonl`, `conditions.jsonl`, `increments.jsonl` |
-| `collect` | stateless forward pass for every condition and regime; anchor activations for all layers | `behavior/<regime>.jsonl`, `acts/<regime>/` |
-| `conversational` | secondary protocol: "Your previous answer was A_k … new evidence …" | `behavior/conversational.jsonl`, `acts/conversational/` |
-| `features` | Δh per increment, transition labels, nuisance covariates; raw states per condition | `features/<regime>/` |
-| `probes` | per-layer LR probes for the four transition tasks (+ revision, + state probes), nuisance-only / residualised / gain-beyond-nuisance, cross-task transfer matrix | `probes/<regime>/<task>/<split>/` |
-| `transfer` | stateless → conversational direction transfer; `--transfer-from <other cfg>` for dataset/model transfer | `probes/transfer_*.json` |
-| `steer` | ±α·v steering on held-out sufficient / insufficient / false / answer-string / distractor contexts, with random-direction control | `steer/results.json` |
-| `patch` | patch sufficient-run anchor into insufficient run: full, ∥v, ⊥v, random dir, distractor update, other question | `patch/results.json` |
-| `adaptive` | stop-retrieving-when-sufficient simulation vs behavioural / entropy / oracle / full baselines | `adaptive/results.json` |
-| `report` | markdown tables + plots | `report/summary.md`, `report/*.png` |
+| `screen` | closed-book pass over the question pool, keep the questions the model gets wrong, build the conditions and increments | `screen.jsonl`, `questions.jsonl`, `conditions.jsonl`, `increments.jsonl` |
+| `collect` | one forward pass per condition and regime; anchor activations for all layers | `behavior/<regime>.jsonl`, `acts/<regime>/` |
+| `conversational` | the second protocol: "Your previous answer was A_k … new evidence …" | `behavior/conversational.jsonl`, `acts/conversational/` |
+| `features` | `Δh` per increment, transition labels, nuisance covariates, raw states per condition | `features/<regime>/` |
+| `probes` | per-layer logistic probes for every task, nuisance-only / residualised / gain-beyond-nuisance, cross-task transfer matrix | `probes/<regime>/<task>/<split>/` |
+| `transfer` | stateless → conversational transfer; `--transfer-from <config>` for another dataset or model | `probes/transfer_*.json` |
+| `steer` | additive `±α·v` steering on held-out contexts, with a random-direction control | `steer/results.json` |
+| `patch` | patch the sufficient run's anchor into the insufficient run: full, ∥v, ⊥v, random, distractor, other question | `patch/results.json` |
+| `ablate` | projection-out, low-dose difference-of-means steering, subspace rank | `ablate/results.json` |
+| `adaptive` | stop-retrieving-when-sufficient simulation against behavioural / entropy / oracle / full baselines | `adaptive/results.json`, `adaptive/directions.json` |
+| `text_baseline` | TF-IDF and DeBERTa classifiers on the same increments | `text_baseline/results.json` |
+| `closedbook` | closed-book accuracy of the selected questions | `closedbook/results.json` |
+| `judge` | LLM-judged correctness, for free-form answers (RAGBench) | `behavior/<regime>.judged.jsonl` |
+| `variants` | LLM paraphrase / partial variants and independent cross-dataset sources (ESTB) | `variants.jsonl` |
+| `retrieve` | BM25 / E5 retrieval for the question set | `retrieved_<method>.jsonl` |
+| `report` | markdown summary and AUROC-by-layer plots | `report/summary.md`, `report/*.png` |
+
+A few analyses are modules rather than stages, because they re-read a finished
+run's features: `revise.analysis.bootstrap` (question-level confidence
+intervals), `representation_ablation`, `behaviour_control`,
+`verbal_vs_internal`, `self_verbal_baseline`, `groups` and `estb`. All take
+config paths as arguments, and the replication scripts call them in the right
+places.
+
+### Configs
+
+`configs/` holds one YAML per experiment; `revise/experiment.py::DEFAULTS` has
+the full default configuration and a config only overrides what it changes.
+Several configs share a `run_name` on purpose — a follow-up such as
+`musique_2hop_qwen7b_dmsteer_small.yaml` writes a differently named artefact
+(`ablate/results_dmsteer_small.json`) into the *same* run directory, reusing
+its activations.
+
+```
+smoke.yaml                                 tiny end-to-end check
+musique_2hop_{qwen7b,llama8b,mistral7b}    the main runs (Table 2)
+musique_full_qwen7b, twowiki_qwen7b        3-4 hop and 2Wiki transfer targets
+hotpotqa_*, ragbench_*, synthetic_*        external benchmarks (Table 5)
+*_textbaseline[_full]                      text classifiers (Table 3)
+*_dmsteer_small, *_steer_large/_allpos     steering follow-ups (Figure 1)
+*_{e5,bm25}_{noise,full}, *_variants       ESTB evidence sources
+```
+
+The external-benchmark and ESTB configs also exist for Llama and Mistral (for
+example `configs/ragbench_llama8b.yaml`). The paper reports those cells for
+Qwen, which is what the scripts run by default; pass the other configs as
+arguments to run them as well.
 
 ## Evidence conditions and increments
 
-For gold hops `g_0 … g_{n−1}` (canonical reasoning order from the dataset's
+For gold hops `g_0 … g_{n−1}` (the canonical reasoning order from the dataset's
 decomposition) and length-matched distractors, `trajectories.py` builds
 
-* `C0`, `CD` (matched distractors only)
-* prefix chains in canonical, reverse and random hop orders (`C_1 → C_12` …), the last prefix being *minimally sufficient*
-* leave-one-out contexts (n ≥ 3) and their completion
-* `C_ALL+D`, `C_ALL+R` (duplicate support), `C_ALL+F` (conflicting false evidence), `C_F` (full 20-paragraph context)
+* `C0`, `CD` (matched distractors only);
+* prefix chains in canonical, reverse and random hop orders (`C_1 → C_12` …),
+  the last prefix being *minimally sufficient*;
+* leave-one-out contexts (n ≥ 3) and their completion;
+* `C_ALL+D`, `C_ALL+R` (duplicate support), `C_ALL+F` (conflicting false
+  evidence), `C_F` (the full 20-paragraph context);
 
 and from every penultimate state `S` the **matched increments**
 
@@ -99,70 +215,91 @@ and from every penultimate state `S` the **matched increments**
 | `S → S+F` (final hop with the sub-answer swapped for a same-relation entity) | `false` | no |
 | `S → S+A` (distractor carrying the answer string in a "not to be confused with" hatnote) | `answer_ctrl` | no |
 
-New paragraphs are inserted at a random position so that increments are
-textually minimal while decisive-paragraph position is randomised.  Each
-increment additionally carries the behavioural transition of the model
-(`state_from/state_to ∈ {correct, wrong, insufficient}`), giving the four
-probe tasks of the plan: **sufficiency**, **uptake** (decisive & correct vs
-decisive & ignored), **correction** (wrong→correct vs wrong→wrong) and
-**stability** (correct→correct vs correct→wrong), plus **revision**.
+New paragraphs are inserted at a random position, so increments are textually
+minimal while the decisive paragraph's position is randomised. Each increment
+also carries the model's behavioural transition
+(`state_from/state_to ∈ {correct, wrong, insufficient}`), which gives the probe
+tasks: **sufficiency**, **uptake** (decisive and used vs decisive and ignored),
+**correction** (wrong→correct vs wrong→wrong), **stability** (correct→correct
+vs correct→wrong) and **revision**.
 
-Nuisance covariates regressed out / compared against: Δtokens, context
-length, Δ gold-answer log-prob, Δ entropy, Δ top-prob, answer-string presence
-(in added text / in full context), TF-IDF relevance of the added passage,
-insertion position, passage TF-IDF-SVD embedding.
+The nuisance covariates regressed out and compared against are: Δtokens,
+context length, Δ gold-answer log-probability, Δ entropy, Δ top-probability,
+presence of the answer string (in the added text and in the full context),
+TF-IDF relevance of the added passage, insertion position, and a TF-IDF-SVD
+embedding of the added passage.
 
-## Runtime on CPU
+## Layout
 
-Per-condition cost is dominated by the prefill of a ~300–700-token prompt.
-Measured throughput is logged by `collect` (`prompt tok/s`).  Rough budget for
-Phase 1 (2,000 questions × ~17 conditions × 2 regimes + ~10 conversational
-increments each ≈ 90k forward passes):
-
-* Qwen2.5-0.5B: the whole smoke pipeline takes ~10 minutes.
-* Qwen2.5-7B bf16, 64 threads (measured on this machine): model load 4 s,
-  prefill ≈ 300–350 prompt tokens/s, **≈ 1.3 s per condition** (batch 1 or 8
-  are nearly identical on CPU).  Full Phase 1 (~90k passes) ≈ 30–35 h of wall
-  clock; it is resumable, so it can be run in chunks.  Reduce
-  `data.n_questions` (e.g. 500 → ~8 h) for a first pass; probes are trained on
-  Δh so even 300 questions give several thousand labelled increments.
-
-Set `model.num_threads` to the number of *physical* cores of one socket
-(64 here); hyper-threads do not help GEMM throughput.  `model.quantize: int8`
-(dynamic int8 for `nn.Linear`) cuts memory ~4× at some accuracy cost.
-
-## Notes / assumptions
-
-* Correctness uses a lenient match (exact match on any alias, or the alias
-  contained in a prediction ≤ 3× its length); `eval.correctness: strict` for EM.
-* Activations are stored at the last prompt token (after the chat template's
-  assistant header), i.e. the position that emits the first answer token, so
-  the state probes are genuinely *pre-generation*.
-* Layer index `l` in every artifact = residual stream after decoder block `l`
-  (0 = embeddings), before the final norm.
-* Redundant evidence is a verbatim duplicate of a present gold paragraph
-  (MuSiQue/2Wiki have no paraphrased supports).  Replace `redundant_copy` in
-  `trajectories.py` with a paraphrase source if desired.
-* `sufficient` for a `false` condition is False (the true gold hop is absent).
-
-## GPU runs
-
-The backend auto-selects CUDA when available (`model.device: auto`; override
-with `REVISE_DEVICE=cpu|cuda`).  `REVISE_BATCH_SIZE` overrides the batch size
-at run time (32 is a good GPU default; batching barely helps on CPU).  The
-`revise` env carries a CUDA 12.8 build of PyTorch that also runs on CPU.
-
-This host shares GPUs through `gpuq` (rolling 7-day GPU-hour budget, jobs
-capped at 48 h, stacking on a card you already hold is allowed with `-m`).
-`scripts/gpu_run.sh <config> <stage> [stage ...]` submits a sequence of
-pipeline stages as one gpuq job with the env activated and `HF_HUB_OFFLINE=1`
-(every model/dataset used is cached under scratch; Llama-3.1 is gated and
-must be loaded offline):
-
-```bash
-HOURS=6 BATCH=32 GPUQ_ARGS="--queue -m 20" scripts/gpu_run.sh configs/musique_2hop_llama8b.yaml screen collect features
-GPUQ_ARGS="--devices 3 -m 20" scripts/gpu_run.sh configs/musique_2hop_qwen7b.yaml ablate      # stack on your own card
+```
+revise/
+  config.py              scratch and cache paths (everything under REVISE_SCRATCH)
+  experiment.py          config defaults, merging, and the run directory layout
+  cli.py                 python -m revise.cli <stage> -c configs/<config>.yaml
+  prompts.py             evidence-only, evidence-augmented, closed-book, conversational templates
+  eval.py                answer normalisation, lenient / strict correctness, abstention detection
+  store.py               sharded float16 activation store
+  data/loaders.py        MuSiQue, 2Wiki, HotpotQA, RAGBench -> Question (ordered gold hops, distractors)
+  data/synthetic.py      templated controlled trajectories with fictional entities
+  data/trajectories.py   evidence conditions and labelled increments
+  data/retrieval.py      wiki-18 corpus, BM25 and E5 retrieval, passage labelling
+  data/variants.py       LLM paraphrase / partial variants
+  data/independent.py    the same fact from another dataset's paragraphs
+  model/backend.py       HF backend: anchor activations, gold log-prob, greedy decoding, steer/patch hooks
+  run/collect.py         closed-book screening, stateless collection, conversational protocol
+  run/{steer,patch,ablate}.py   the causal interventions
+  run/adaptive.py        adaptive-retrieval simulation
+  run/{judge,closedbook}.py     LLM-judged correctness, closed-book accuracy
+  analysis/features.py   Δh datasets, transition labels, nuisance covariates
+  analysis/splits.py     question / document / answer-entity / relation-disjoint splits
+  analysis/probes.py     per-layer probes, nuisance analyses, cross-task and cross-run transfer
+  analysis/bootstrap.py  question-level bootstrap intervals
+  analysis/*.py          the read-out, baseline, group and ESTB analyses
+  analysis/report.py     per-run markdown summary and plots
+configs/                 one YAML per experiment
+scripts/                 setup, the replication scripts, and paper/ (tables and figures)
+tests/                   trajectory invariants, splits, evaluation, planted-direction probe, tiny backend
 ```
 
-CPU-only stages (no model forward passes): `features`, `probes`, `transfer`,
-`adaptive`, `report`, and the TF-IDF part of `text_baseline`.
+## Runtime and hardware
+
+The cost is dominated by the forward passes, each a prefill of a 300–700-token
+prompt. As reported in the paper's compute appendix:
+
+* collection for one 2-hop model (≈35k conditions) takes **about one hour on an
+  H200**, or about 22 hours on 64 CPU cores at ~300 prompt tokens/s;
+* the MuSiQue 3–4 hop run took 1.3 GPU-hours;
+* all the causal experiments and text baselines together used about 7 GPU-hours;
+* probing runs on CPU in one to two hours per model.
+
+Both devices work — the backend selects CUDA when it is visible, and
+`REVISE_DEVICE=cpu|cuda` overrides that. On a GPU set `REVISE_BATCH_SIZE=32`
+(batching barely helps on CPU) and lower `REVISE_TOKEN_BUDGET` if memory is
+tight. On CPU, set `REVISE_NUM_THREADS` to the number of *physical* cores of
+one socket, since hyper-threads do not help GEMM throughput, and
+`model.quantize: int8` cuts memory about 4× at some accuracy cost.
+
+For a cheaper first pass, reduce `data.n_questions`: the probes are trained on
+increments, so even 300 questions give several thousand labelled examples.
+Every stage is deterministic given the seed (question sampling, insertion
+positions, false-answer choice, splits) and resumable.
+
+The stages that need no model are `features`, `probes`, `transfer`, `adaptive`,
+`report`, every analysis module, and the TF-IDF half of `text_baseline`.
+
+## Notes and assumptions
+
+* Correctness is a lenient match (exact match on any alias, or the alias
+  contained in a prediction at most 3× its length); `eval.correctness: strict`
+  gives exact match, and `judge` replaces both with an LLM judgement.
+* Activations are taken at the last prompt token, after the chat template's
+  assistant header — the position that emits the first answer token — so the
+  state probes are genuinely *pre-generation*.
+* Layer index `l` in every artefact is the residual stream after decoder block
+  `l` (0 = embeddings), before the final norm.
+* Redundant evidence is a verbatim duplicate of a gold paragraph already in the
+  context, since MuSiQue and 2Wiki have no paraphrased supports; the ESTB
+  variants runs supply LLM paraphrases instead.
+* `sufficient` is False for a `false` condition: the true gold hop is absent.
+* `aux_model` in a config fixes one model for judging and for generating
+  variants, so those labels are identical across the model families studied.

@@ -4,18 +4,13 @@ __pycache__/
 .pytest_cache/
 build/
 dist/
-# never keep weights, data or run artifacts in the repo (they live under REVISE_SCRATCH)
+# Weights, datasets and run artefacts live under REVISE_SCRATCH, never in the repo.
+/scratch/
 /runs/
 /data/
 /hf_cache/
 /artifacts/
 *.npy
 *.log
-# LaTeX build files (keep main.pdf, tables and figures)
-Paper/*.aux
-Paper/*.blg
-Paper/*.bbl
-Paper/*.out
-Paper/*.fls
-Paper/*.fdb_latexmk
-Paper/*.synctex.gz
+# Tables and figures rebuilt from the runs by scripts/make_paper_artifacts.sh.
+/paper_artifacts/

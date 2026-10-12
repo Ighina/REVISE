@@ -13,12 +13,10 @@ from __future__ import annotations
 
 import json
 import re
-from pathlib import Path
 from typing import List, Optional
 
 from revise import config
 from revise.data.schema import Paragraph, Question, read_jsonl, write_jsonl
-
 
 # ---------------------------------------------------------------------------
 # MuSiQue

@@ -105,10 +105,10 @@ def main(argv=None) -> None:
     if stage == "variants":
         # ESTB linguistic-form axis: LLM paraphrase / partial variants (GPU), cross-dataset independent
         # sources (CPU); then rebuild conditions/increments so that `collect` picks up the new ones.
-        from revise.data.variants import attach_variants, generate_variants
         from revise.data.independent import independent_variants
-        from revise.data.trajectories import build_all
         from revise.data.schema import write_jsonl
+        from revise.data.trajectories import build_all
+        from revise.data.variants import attach_variants, generate_variants
         qs = run.questions()
         vcfg = cfg.get("variants") or {}
         rows = {}

@@ -15,12 +15,12 @@ from __future__ import annotations
 
 import json
 import sys
-from collections import defaultdict
 from typing import Dict, List
 
 import numpy as np
 from sklearn.metrics import roc_auc_score
 
+from revise import config
 from revise.analysis.features import DECISIVE_KINDS, load_features
 from revise.analysis.probes import DELTA_TASKS, _select
 from revise.analysis.splits import make_split
@@ -107,4 +107,5 @@ if __name__ == "__main__":
         for r in rows:
             if r["axis"] in ("all", "quality") or r["n"] >= 200:
                 print(f"{r['run']:28s} {r['task']:11s} {r['axis']:9s} {str(r['cell']):32s} n={r['n']:6d} musique-dir={('%.3f' % r['auc_musique_dir']) if r['auc_musique_dir'] is not None else '  -  '} own={('%.3f' % r['auc_own_probe']) if r['auc_own_probe'] is not None else '  -  '}")
-    json.dump(all_rows, open("/scratch/users/iacopog/revise/artifacts/estb_cells.json", "w"), indent=1)
+    with open(config.artifact("estb_cells.json"), "w") as f:
+        json.dump(all_rows, f, indent=1, default=float)

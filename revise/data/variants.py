@@ -16,10 +16,9 @@ contain the sub-answer (nor the final answer) and mentions the subject.
 from __future__ import annotations
 
 import logging
-import os
 import re
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from revise.data.schema import Paragraph, Question, append_jsonl, read_jsonl
 from revise.eval import normalize_answer

@@ -23,15 +23,13 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
-from revise.analysis.features import load_features
-from revise.analysis.probes import load_direction
 from revise.analysis.splits import make_split
 from revise.eval import clean_generation, is_correct, is_insufficient, normalize_answer
 from revise.experiment import Run
 from revise.model.backend import HFBackend, Intervention
 from revise.prompts import build_stateless
 from revise.run.collect import get_backend
-from revise.run.steer import EVAL_SETS, _pick_eval_conditions, _score, state_gap
+from revise.run.steer import _pick_eval_conditions, _score, state_gap
 from revise.store import ActivationStore
 
 log = logging.getLogger(__name__)

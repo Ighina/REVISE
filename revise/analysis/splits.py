@@ -1,5 +1,5 @@
 """Train/test splits that are disjoint by question, document, answer entity or
-relation type (RESEARCH_PLAN.md, "Training split")."""
+relation type (see "Evidence conditions and increments" in the README)."""
 from __future__ import annotations
 
 import logging

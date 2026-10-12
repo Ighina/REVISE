@@ -37,6 +37,7 @@ def _uptake_given_answer(r, regime, mode, a, dm, idx_all, assign, sig, ans_to, y
     can be compared.  Scores: the stored uptake probe (trained on all decisive increments),
     a probe refitted on answered increments only (stored best layer), and output confidence."""
     import json
+
     from revise.analysis.probes import _fit_lr, _Std
     X, _ = load_features(r, regime, "deltas")
     d = r.probes_dir(regime) / "uptake" / mode

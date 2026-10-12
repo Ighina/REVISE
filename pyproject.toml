@@ -13,9 +13,31 @@ dependencies = [
   "sentencepiece", "tiktoken", "joblib",
 ]
 
+[project.optional-dependencies]
+# Only the retrieved-evidence (ESTB) runs need these: BM25 over the wiki-18
+# corpus and the E5 FAISS index.  See scripts/run_estb.sh.
+retrieval = ["bm25s", "PyStemmer", "faiss-cpu"]
+
 [tool.setuptools.packages.find]
 include = ["revise*"]
 
+[tool.ruff]
+# The analysis code is written in a deliberately dense style (one logical step per
+# line, several short statements per line); the long line budget keeps it that way.
+line-length = 150
+extend-exclude = ["scratch", "paper_artifacts"]
+
+[tool.ruff.lint]
+# E701/E702 (several statements per line) are deliberate here, so only the
+# import, syntax-error and undefined/unused-name rules are enforced.
+select = ["E4", "E9", "F", "I"]
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma = false   # keep import blocks on one line where they fit
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# The `slow` test downloads a 0.5B model, so it is opt-in: `pytest -m slow`
+# (set REVISE_SCRATCH first, or the weights land in the system temp directory).
+addopts = "-m 'not slow'"
 markers = ["slow: needs model weights"]

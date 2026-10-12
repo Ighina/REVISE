@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import random
 from typing import Dict, List, Optional
 
@@ -25,7 +26,6 @@ import numpy as np
 import torch
 from tqdm import tqdm
 
-from revise.analysis.probes import load_direction
 from revise.analysis.splits import make_split
 from revise.eval import clean_generation, is_correct, is_insufficient
 from revise.experiment import Run
@@ -64,11 +64,9 @@ def run_patch(cfg: dict, backend: Optional[HFBackend] = None) -> dict:
     incs = list(by_q.values())[: pc["max_questions"]]
     dist = {i.control_group: i for i in run.increments() if i.kind == "distractor"}
     backend = backend or get_backend(cfg)
-    n_layers_total = store.shape_tail[0]
     rng = random.Random(cfg["analysis"]["seed"])
     nrng = np.random.default_rng(cfg["analysis"]["seed"])
     results = {"config": pc, "runs": []}
-    import os
     bs = int(os.environ.get("REVISE_BATCH_SIZE") or cfg["model"]["batch_size"])
     for task in tasks:
         layer_ids, dirs, best_layer = _all_directions(run, regime, task, mode)

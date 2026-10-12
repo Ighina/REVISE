@@ -1,7 +1,7 @@
 """Construct evidence conditions and paired increments for a question.
 
-For a question with gold hop paragraphs g_0..g_{n-1} we build (names follow
-RESEARCH_PLAN.md):
+For a question with gold hop paragraphs g_0..g_{n-1} we build (the README's
+"Evidence conditions and increments" section tabulates these):
 
   C0           no evidence
   CD           matched distractors only (n of them, length-matched to golds)
@@ -29,7 +29,6 @@ from __future__ import annotations
 
 import random
 import re
-from dataclasses import replace
 from typing import Dict, List, Optional, Sequence, Tuple
 
 from revise.data.schema import Condition, Increment, Paragraph, Question

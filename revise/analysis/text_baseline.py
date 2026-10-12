@@ -18,7 +18,7 @@ from typing import Dict, List
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import average_precision_score, roc_auc_score
+from sklearn.metrics import roc_auc_score
 
 from revise.analysis.features import load_features
 from revise.analysis.probes import DELTA_TASKS, _select

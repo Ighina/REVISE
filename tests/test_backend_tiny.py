@@ -16,8 +16,8 @@ def backend():
 
 
 def test_batch_matches_single(backend):
-    from revise.prompts import build_stateless
     from revise.data.schema import Paragraph
+    from revise.prompts import build_stateless
     p = [Paragraph("g0", "Paris", "Paris is the capital of France.", "gold", 0)]
     msgs = [build_stateless("evidence_only", "What is the capital of France?", p),
             build_stateless("evidence_only", "What is the capital of Germany?", p)]

@@ -23,7 +23,7 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple
+from typing import Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -33,7 +33,10 @@ from revise.eval import normalize_answer
 
 log = logging.getLogger(__name__)
 RETRIEVAL_DIR = config.SCRATCH_ROOT / "retrieval"
-RETRIEVAL_DIR.mkdir(parents=True, exist_ok=True)
+try:  # importing this module must not fail where REVISE_SCRATCH is unwritable
+    RETRIEVAL_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
 
 
 def _hub_file(repo: str, name: str) -> Path:
@@ -73,9 +76,7 @@ class WikiCorpus:
     def _iter_lines(src: Path) -> Iterable[str]:
         """The Hub file is a gzipped tar containing one JSONL member (FlashRAG dump);
         fall back to plain gzipped JSONL."""
-        import io, tarfile
-        with open(src, "rb") as fh:
-            head = fh.read(2)
+        import tarfile
         with gzip.open(src, "rb") as g:
             probe = g.read(512)
         if b"ustar" in probe:
@@ -142,7 +143,8 @@ class BM25Retriever:
 
 class E5Retriever:
     def __init__(self, corpus: WikiCorpus, device: Optional[str] = None):
-        import faiss, torch
+        import faiss
+        import torch
         from transformers import AutoModel, AutoTokenizer
         self.corpus = corpus
         idx = RETRIEVAL_DIR / "e5_Flat.index"

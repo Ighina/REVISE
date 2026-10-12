@@ -1,6 +1,6 @@
 """Core data structures shared across the pipeline.
 
-Terminology (mirrors RESEARCH_PLAN.md):
+Terminology (the README's "Evidence conditions and increments" section):
 
 * ``Question``   -- a multi-hop question with its ordered gold supporting
                     paragraphs (one per reasoning hop) and matched distractors.
